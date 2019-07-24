@@ -11,7 +11,7 @@ import (
 )
 
 func Help(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSendEmbed(m.ChannelID, HelpEmbed)
+	s.ChannelMessageSendEmbed(m.ChannelID, getHelpEmbed())
 }
 
 func DefaultHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -20,4 +20,8 @@ func DefaultHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func Ping(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Pong!")
+}
+
+func Avatar(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSendEmbed(m.ChannelID, getAvatarEmbed(m.Author))
 }
