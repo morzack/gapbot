@@ -16,7 +16,7 @@ The bot is built using [discordgo](https://github.com/bwmarrin/discordgo).
 | --- | --- |
 | help | get help on the bot |
 | ping | ping the bot |
-| avatar | display your avatar (may display others later) |
+| avatar | display your avatar |
 
 ## Configuration
 The default config is designed to run on a Raspberry Pi that's been set up for bots.
