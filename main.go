@@ -60,6 +60,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Help(s, m)
 		case "ping":
 			Ping(s, m)
+		case "avatar:
+			Avatar(s, m)	
 		default:
 			DefaultHelp(s, m)
 		}
