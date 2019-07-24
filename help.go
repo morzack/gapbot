@@ -20,8 +20,7 @@ var (
 			&discordgo.MessageEmbedField{
 				Name: "Basic",
 				Value: "`ping` - ping the bot\n" +
-					"`help` - it seems like you figured this one out" +
-					"`avatar` - display an image of your avatar",
+					"`help` - it seems like you figured this one out",
 				Inline: false,
 			},
 		},
