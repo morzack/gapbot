@@ -2,7 +2,7 @@
 
 ![trens](https://media1.tenor.com/images/9c4e40c1ee1511ef81092e9761f22930/tenor.gif)
 
-Discord bot for the Cary Academy Discord server
+A Discord bot for the Cary Academy Discord server
 
 ## Summary
 This is intended to be a multipurpose Discord bot for the CA Discord server semi based off of [Nineball](https://github.com/morzack/nineball).
