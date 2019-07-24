@@ -19,7 +19,7 @@ var (
 		Fields: []*discordgo.MessageEmbedField{
 			&discordgo.MessageEmbedField{
 				Name: "The Avatar",
-				Value: &discordgo.messageAuthor.AvatarURL,
+				URL: &discordgo.messageAuthor.AvatarURL,
 				Inline: false,
 			},
 		},
