@@ -16,6 +16,7 @@ The bot is built using [discordgo](https://github.com/bwmarrin/discordgo).
 | --- | --- |
 | help | get help on the bot |
 | ping | ping the bot |
+| avatar | display your avatar (may display others later) |
 | purge | deletes a certain amount of messages from a channel |
 
 ## Configuration
