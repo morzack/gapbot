@@ -21,7 +21,7 @@ var (
 				Name: "Basic",
 				Value: "`ping` - ping the bot\n" +
 					"`help` - it seems like you figured this one out\n" +
-					"`purge` - purge x amount of messages from the channel" +
+					"`purge` - purge x amount of messages from the channel\n" +
 					"`avatar` - display an image of your avatar",
 				Inline: false,
 			},
