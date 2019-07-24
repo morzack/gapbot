@@ -21,3 +21,7 @@ func DefaultHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 func Ping(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Pong!")
 }
+
+func Avatar(s *discordgo.Session, . *discordgo.MessageCreate) {
+	s.ChannelMessageSendEmbed(m.ChannelID, AvatarEmbed)
+}
