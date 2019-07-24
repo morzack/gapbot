@@ -12,6 +12,7 @@ import (
 
 var (
 	configData ConfigData
+	debugMode  = true
 )
 
 type ConfigData struct {
@@ -21,11 +22,14 @@ type ConfigData struct {
 }
 
 func getConfigPath() (string, error) {
-	homePath := os.Getenv("HOME")
-	if homePath == "" {
-		return "", errors.New("Use Linux and set your $HOME variable you filthy casual")
+	if !debugMode {
+		homePath := os.Getenv("HOME")
+		if homePath == "" {
+			return "", errors.New("Use Linux and set your $HOME variable you filthy casual")
+		}
+		return fmt.Sprintf("%s/.config/gapbot/config.json", homePath), nil
 	}
-	return fmt.Sprintf("%s/.config/gapbot/config.json", homePath), nil
+	return fmt.Sprintf("./config.json"), nil
 }
 
 func loadConfig() error {
