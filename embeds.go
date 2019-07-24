@@ -33,8 +33,8 @@ func getHelpEmbed() *discordgo.MessageEmbed {
 	embed.Fields = []*discordgo.MessageEmbedField{
 		&discordgo.MessageEmbedField{
 			Name: "Basic",
-			Value: "`ping` - ping the bot\n" +
-				"`help` - it seems like you figured this one out\n" +
+			Value: 	"`help` - it seems like you figured this one out\n" +
+				"`ping` - ping the bot\n" +
 				"`avatar` - display an image of your avatar",
 			Inline: false,
 		},
