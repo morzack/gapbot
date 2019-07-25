@@ -23,5 +23,9 @@ func Ping(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func Avatar(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSendEmbed(m.ChannelID, getAvatarEmbed(m.Author))
+	if (m.MentionRoles != nil){
+		s.ChannelMessageSendEmbed(m.ChannelID, getAvatarEmbed(fmt.Sprintf("<@%s>", m.MentionRoles[0])))	
+	} else{
+		s.ChannelMessageSendEmbed(m.ChannelID, getAvatarEmbed(m.Author))
+	}
 }
