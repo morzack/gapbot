@@ -25,3 +25,12 @@ func Ping(s *discordgo.Session, m *discordgo.MessageCreate) {
 func Avatar(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getAvatarEmbed(m.Author))
 }
+func Purge(s *discordgo.Session, m *discordgo.MessageCreate, n int) {
+	me, err := s.ChannelMessages(m.ChannelID, n)
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, "Can't delete those messages!")
+	}
+	for i := 0; i < n; i++ {
+		s.ChannelMessageDelete(me[i].ID)
+	}
+}
