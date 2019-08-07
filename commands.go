@@ -31,6 +31,8 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 	switch command {
 	case "purge":
 		Purge(s, m)
+	case "help":
+		AdminHelp(s, m)
 	default:
 		UserCommand(s, m, command)
 	}
@@ -39,6 +41,10 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 //Help command
 func Help(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getHelpEmbed())
+}
+
+func AdminHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSendEmbed(m.ChannelID, getAdminHelpEmbed())
 }
 
 //DefaultHelp command
