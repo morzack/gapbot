@@ -43,7 +43,7 @@ func Avatar(s *discordgo.Session, m *discordgo.MessageCreate) {
 //Purge command
 func Purge(s *discordgo.Session, m *discordgo.MessageCreate, n int) {
   var messageIDs [] string
-	messages, err := s.ChannelMessages(m.ChannelID, n, m.ID, "", "")
+	messages, err := s.ChannelMessages(m.ChannelID, n+1, "", "", "")
 	if err != nil || n > 100 {
 		fmt.Printf("Error getting messages: %s", err)
 		s.ChannelMessageSend(m.ChannelID, "Please enter a number between 1 and 100")
