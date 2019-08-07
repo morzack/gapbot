@@ -41,3 +41,16 @@ func getHelpEmbed() *discordgo.MessageEmbed {
 	}
 	return embed
 }
+
+func getAdminHelpEmbed() *discordgo.MessageEmbed {
+	embed := getBaseEmbed()
+	embed.Title = "Admin Commands"
+	embed.Fields = []*discordgo.MessageEmbedField{
+		&discordgo.MessageEmbedField{
+			Name:   "Admin",
+			Value:  "`purge #` - purge a given number of messages (up to 99) from a channel",
+			Inline: false,
+		},
+	}
+	return embed
+}
