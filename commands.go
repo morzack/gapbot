@@ -74,8 +74,8 @@ func Purge(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "Make sure a number of messages to delete is specified at the end of the command")
 		return
 	}
-	if n > 100 || n < 1 {
-		s.ChannelMessageSend(m.ChannelID, "Please enter a number between 1 and 100")
+	if n > 99 || n < 1 {
+		s.ChannelMessageSend(m.ChannelID, "Please enter a number between 1 and 99 (inclusive)")
 		return
 	}
 	var messageIDs []string
