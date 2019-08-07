@@ -55,13 +55,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if strings.HasPrefix(m.Content, configData.Prefix) {
-		switch strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))[0] {
+		content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
+		switch content[0] {
 		case "help":
 			Help(s, m)
 		case "ping":
 			Ping(s, m)
 		case "avatar":
-			Avatar(s, m)
+			Avatar(s, m, content[len(content)-1])
 		default:
 			DefaultHelp(s, m)
 		}
