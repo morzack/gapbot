@@ -50,8 +50,8 @@ func Purge(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "Make sure a number of messages to delete is specified at the end of the command")
 		return
 	}
-	if n > 99 || n < 1 {
-		s.ChannelMessageSend(m.ChannelID, "Please enter a number between 1 and 99 (inclusive)")
+	if n > 100 || n < 1 {
+		s.ChannelMessageSend(m.ChannelID, "Please enter a number between 1 and 100")
 		return
 	}
 	var messageIDs []string
@@ -64,4 +64,20 @@ func Purge(s *discordgo.Session, m *discordgo.MessageCreate) {
 		messageIDs = append(messageIDs, element.ID)
 	}
 	s.ChannelMessagesBulkDelete(m.ChannelID, messageIDs)
+}
+
+//UserInfo embed command
+func UserInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
+	g, _ := s.Guild(m.GuildID)
+	if len(m.Mentions) > 0 {
+		if len(m.Mentions) > 4 {
+			s.ChannelMessageSend(m.ChannelID, "Make sure to mention less than 5 users")
+			return
+		}
+		for _, u := range m.Mentions {
+			s.ChannelMessageSendEmbed(m.ChannelID, getUserEmbed(u, s, g))
+		}
+		return
+	}
+	s.ChannelMessageSendEmbed(m.ChannelID, getUserEmbed(m.Author, s, g))
 }
