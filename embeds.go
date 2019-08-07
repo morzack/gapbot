@@ -35,9 +35,20 @@ func getHelpEmbed() *discordgo.MessageEmbed {
 			Name: "Basic",
 			Value: "`ping` - ping the bot\n" +
 				"`help` - it seems like you figured this one out\n" +
-				"`purge` `#` - purge `#` of messages from the channel (up to 100)\n" +
-				"`purge` - purges the most recent 50 messages from the channel\n" +
 				"`avatar` `user` - display an image of your avatar or up to 4 others",
+			Inline: false,
+		},
+	}
+	return embed
+}
+
+func getAdminHelpEmbed() *discordgo.MessageEmbed {
+	embed := getBaseEmbed()
+	embed.Title = "Admin Commands"
+	embed.Fields = []*discordgo.MessageEmbedField{
+		&discordgo.MessageEmbedField{
+			Name:   "Admin",
+			Value:  "`purge #` - purge a given number of messages (up to 100) from a channel, defaults to 50",
 			Inline: false,
 		},
 	}
