@@ -62,13 +62,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		case "ping":
 			Ping(s, m)
 		case "avatar":
-			if len(m.Mentions) > 0 {
-				for _, u := range m.Mentions {
-					Avatar(s, m, u)
-				}
-				break
-			}
-			Avatar(s, m, m.Author)
+			Avatar(s, m)
 		default:
 			DefaultHelp(s, m)
 		}

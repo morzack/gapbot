@@ -22,6 +22,16 @@ func Ping(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Pong!")
 }
 
-func Avatar(s *discordgo.Session, m *discordgo.MessageCreate, author *discordgo.User) {
-	s.ChannelMessageSendEmbed(m.ChannelID, getAvatarEmbed(author))
+func Avatar(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if len(m.Mentions) > 0 {
+		if len(m.Mentions) > 4 {
+			s.ChannelMessageSend(m.ChannelID, "Make sure to mention less than 5 users")
+			return
+		}
+		for _, u := range m.Mentions {
+			s.ChannelMessageSendEmbed(m.ChannelID, getAvatarEmbed(u))
+		}
+		return
+	}
+	s.ChannelMessageSendEmbed(m.ChannelID, getAvatarEmbed(m.Author))
 }
