@@ -61,13 +61,11 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		case "ping":
 			Ping(s, m)
 		case "avatar":
-			Avatar(s, m)
+			Avatar(s, m) 
+		case "purge":
+			Purge(s, m)
 		default:
 			DefaultHelp(s, m)
 		}
-	}
-}
-	}
-}
 	}
 }
