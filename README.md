@@ -1,6 +1,6 @@
 # Gapbot
 
-![trens](https://media1.tenor.com/images/9c4e40c1ee1511ef81092e9761f22930/tenor.gif)
+![trens](https://i.kym-cdn.com/photos/images/newsfeed/000/712/191/17f.gif)
 
 A Discord bot for the Cary Academy Discord server
 
