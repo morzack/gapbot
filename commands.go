@@ -23,12 +23,12 @@ func Ping(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func Avatar(s *discordgo.Session, m *discordgo.MessageCreate) {
-	// if (m.MentionRoles != nil){
-	// 	s.ChannelMessageSendEmbed(m.ChannelID, getAvatarEmbed(fmt.Sprintf("<@%s>", m.MentionRoles[0])))
-	// } else{
 	s.ChannelMessageSendEmbed(m.ChannelID, getAvatarEmbed(m.Author))
-	// }
 }
+
+func Purge(s *discordgo.Session, m *discordgo.MessageCreate, n int) {
+	messages, err := s.ChannelMessages(m.ChannelID, n, "", "", "")
+	if err != nil {
 		fmt.Printf("Error getting messages: %s", err)
 		s.ChannelMessageSend(m.ChannelID, "You can't delete that many messages!")
 		return
