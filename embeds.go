@@ -35,7 +35,7 @@ func getHelpEmbed() *discordgo.MessageEmbed {
 			Name: "Basic",
 			Value: "`ping` - ping the bot\n" +
 				"`help` - it seems like you figured this one out\n" +
-				"`avatar` - display an image of your avatar",
+				"`avatar` `user` - display an image of your avatar or up to 4 others",
 			Inline: false,
 		},
 	}
