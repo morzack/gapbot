@@ -27,4 +27,5 @@ func Avatar(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 func Purge(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageDelete(m.ChannelID, m.ID)
+	s.ChannelMessageSend(m.ChannelID, "Deleted!")
 }
