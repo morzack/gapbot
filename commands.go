@@ -32,13 +32,15 @@ func Avatar(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 //Purge command
 func Purge(s *discordgo.Session, m *discordgo.MessageCreate, n int) {
+  var messageIDs [] string
 	messages, err := s.ChannelMessages(m.ChannelID, n, m.ID, "", "")
-	if err != nil {
+	if err != nil || n > 100 {
 		fmt.Printf("Error getting messages: %s", err)
-		s.ChannelMessageSend(m.ChannelID, "You can't delete that many messages!")
+		s.ChannelMessageSend(m.ChannelID, "Please enter a number between 1 and 100")
 		return
 	}
 	for _, element := range messages {
-		s.ChannelMessageDelete(m.ChannelID, element.ID)
+    messageIDs = append(messageIDs, element.ID)
 	}
+  s.ChannelMessagesBulkDelete(m.ChannelID, messageIDs)
 }
