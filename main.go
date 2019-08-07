@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"strconv"
 	"strings"
 	"syscall"
-	"strconv"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -65,7 +65,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		case "avatar":
 			Avatar(s, m)
 		case "purge":
-			i ,_ := strconv.Atoi(content[len(content)-1])
+			i, _ := strconv.Atoi(content[len(content)-1])
 			Purge(s, m, i)
 		default:
 			DefaultHelp(s, m)
