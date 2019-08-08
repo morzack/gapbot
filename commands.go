@@ -6,7 +6,6 @@ package main
 import (
 	"fmt"
 	"strings"
-
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
