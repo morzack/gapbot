@@ -29,7 +29,7 @@ func getAvatarEmbed(user *discordgo.User) *discordgo.MessageEmbed {
 
 func getHelpEmbed() *discordgo.MessageEmbed {
 	embed := getBaseEmbed()
-	embed.Title = "Gapbot help"
+	embed.Title = "Gapbot Commands"
 	embed.Fields = []*discordgo.MessageEmbedField{
 		&discordgo.MessageEmbedField{
 			Name: "Basic",
@@ -44,15 +44,13 @@ func getHelpEmbed() *discordgo.MessageEmbed {
 }
 
 func getAdminHelpEmbed() *discordgo.MessageEmbed {
-	embed := getBaseEmbed()
-	embed.Title = "Admin Commands"
-	embed.Fields = []*discordgo.MessageEmbedField{
-		&discordgo.MessageEmbedField{
-			Name:   "Admin",
-			Value:  "`purge #` - purge a given number of messages (up to 99) from a channel",
-			Inline: false,
-		},
-	}
+	embed := getHelpEmbed()
+	embed.Title = "Gapbot Commands"
+	embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+		Name:   "Admin",
+		Value:  "`purge #` - purge a given number of messages (up to 99) from a channel",
+		Inline: false,
+	})
 	return embed
 }
 

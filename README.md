@@ -30,6 +30,7 @@ The bot can be configured using the following fields:
 | bot-prefix | the prefix for the bot to use |
 | discord-key | the discord token for the bot |
 | source-dir | the path to the folder that contains the source code and resources folder |
+| mod-role-name | the role name to determine who can use bot mod commands |
 
 ## Contributions
 Contributions are welcome, but please make it easy for us.

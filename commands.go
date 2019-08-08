@@ -11,9 +11,41 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
+// process commands as normal user
+func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string) {
+	switch command {
+	case "help":
+		Help(s, m)
+	case "ping":
+		Ping(s, m)
+	case "avatar":
+		Avatar(s, m)
+	case "user":
+		UserInfo(s, m)
+	default:
+		DefaultHelp(s, m)
+	}
+}
+
+// process commands as admin
+func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string) {
+	switch command {
+	case "purge":
+		Purge(s, m)
+	case "help":
+		AdminHelp(s, m)
+	default:
+		UserCommand(s, m, command)
+	}
+}
+
 //Help command
 func Help(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getHelpEmbed())
+}
+
+func AdminHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSendEmbed(m.ChannelID, getAdminHelpEmbed())
 }
 
 //DefaultHelp command
