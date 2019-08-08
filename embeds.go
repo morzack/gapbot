@@ -4,6 +4,7 @@
 package main
 
 import (
+	"fmt"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -64,7 +65,7 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 		b = "Yes"
 	}
 	i, _ := m.JoinedAt.Parse()
-	t := i.Format("2-Jan-2006 15:04:05 EST")
+	t := i.Format("02/01/2006 15:04:05 EST")
 	embed := getBaseEmbed()
 	embed.Title = user.String()
 	embed.Image = &discordgo.MessageEmbedImage{
