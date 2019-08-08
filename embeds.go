@@ -4,8 +4,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -51,7 +49,7 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 	embed.Fields = []*discordgo.MessageEmbedField{
 		&discordgo.MessageEmbedField{
 			Name:   "Admin",
-			Value:  "`purge #` - purge a given number of messages (up to 100) from a channel",
+			Value:  "`purge #` - purge a given number of messages (up to 99) from a channel",
 			Inline: false,
 		},
 	}
