@@ -65,6 +65,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			Avatar(s, m)
 		case "purge":
 			Purge(s, m)
+		case "user":
+			UserInfo(s, m)
 		default:
 			DefaultHelp(s, m)
 		}

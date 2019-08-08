@@ -35,7 +35,8 @@ func getHelpEmbed() *discordgo.MessageEmbed {
 			Name: "Basic",
 			Value: "`ping` - ping the bot\n" +
 				"`help` - it seems like you figured this one out\n" +
-				"`avatar` `user` - display an image of your avatar or up to 4 others",
+				"`avatar` `@user` - display an image of your avatar or up to 4 others\n" +
+				"`user` `@user` - display information about a user",
 			Inline: false,
 		},
 	}
@@ -49,6 +50,39 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 		&discordgo.MessageEmbedField{
 			Name:   "Admin",
 			Value:  "`purge #` - purge a given number of messages (up to 99) from a channel",
+			Inline: false,
+		},
+	}
+	return embed
+}
+
+func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild) *discordgo.MessageEmbed {
+	m, _ := s.GuildMember(g.ID, user.ID)
+	b := "No"
+	if user.Bot {
+		b = "Yes"
+	}
+	i, _ := m.JoinedAt.Parse()
+	t := i.Format("02/01/2006 15:04:05 EST")
+	embed := getBaseEmbed()
+	embed.Title = user.String()
+	embed.Image = &discordgo.MessageEmbedImage{
+		URL: user.AvatarURL(""),
+	}
+	embed.Fields = []*discordgo.MessageEmbedField{
+		&discordgo.MessageEmbedField{
+			Name:   "ID",
+			Value:  user.ID,
+			Inline: true,
+		},
+		&discordgo.MessageEmbedField{
+			Name:   "Bot?",
+			Value:  b,
+			Inline: true,
+		},
+		&discordgo.MessageEmbedField{
+			Name:   "Joined the server",
+			Value:  t,
 			Inline: false,
 		},
 	}

@@ -5,9 +5,8 @@ package main
 
 import (
 	"fmt"
-	"strings"
-
 	"strconv"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -64,4 +63,20 @@ func Purge(s *discordgo.Session, m *discordgo.MessageCreate) {
 		messageIDs = append(messageIDs, element.ID)
 	}
 	s.ChannelMessagesBulkDelete(m.ChannelID, messageIDs)
+}
+
+//UserInfo embed command
+func UserInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
+	g, _ := s.Guild(m.GuildID)
+	if len(m.Mentions) > 0 {
+		if len(m.Mentions) > 4 {
+			s.ChannelMessageSend(m.ChannelID, "Make sure to mention less than 5 users")
+			return
+		}
+		for _, u := range m.Mentions {
+			s.ChannelMessageSendEmbed(m.ChannelID, getUserEmbed(u, s, g))
+		}
+		return
+	}
+	s.ChannelMessageSendEmbed(m.ChannelID, getUserEmbed(m.Author, s, g))
 }
