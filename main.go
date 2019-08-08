@@ -56,7 +56,8 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if strings.HasPrefix(m.Content, configData.Prefix) {
 		content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
-		if getBotmod(s, m) {
+
+    if getBotmod(s, m) {
 			AdminCommand(s, m, content[0])
 		} else {
 			UserCommand(s, m, content[0])
