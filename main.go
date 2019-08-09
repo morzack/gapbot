@@ -32,7 +32,7 @@ func main() {
 		return
 	}
 
-	fmt.Printf("Bot launched. Send interrupt to exit ")
+	fmt.Printf("Bot launched. Send interrupt to exit")
 	fmt.Printf("invite link: https://discordapp.com/oauth2/authorize?client_id=%s&scope=bot&permissions=8\n", dg.State.User.ID)
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
