@@ -91,10 +91,10 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 }
 
 func getServerEmbed(s *discordgo.Session, g *discordgo.Guild) *discordgo.MessageEmbed {
-	url := EndpointGuildIcon(g.ID, g.Icon)
+	url := discordgo.EndpointGuildIcon(g.ID, g.Icon)
 	embed := getBaseEmbed()
 	embed.Title = g.Name
-	embed.Image = &discordgo.MessageEmbedImage{
+	embed.Thumbnail = &discordgo.MessageEmbedThumbnail{
 		URL: url,
 	}
 	embed.Fields = []*discordgo.MessageEmbedField{
