@@ -4,6 +4,8 @@
 package main
 
 import (
+	"strconv"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -81,6 +83,32 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 		&discordgo.MessageEmbedField{
 			Name:   "Joined the server",
 			Value:  t,
+			Inline: false,
+		},
+	}
+	return embed
+}
+
+func getServerEmbed(s *discordgo.Session, g *discordgo.Guild) *discordgo.MessageEmbed {
+	embed := getBaseEmbed()
+	embed.Title = g.Name
+	embed.Image = &discordgo.MessageEmbedImage{
+		URL: g.Icon,
+	}
+	embed.Fields = []*discordgo.MessageEmbedField{
+		&discordgo.MessageEmbedField{
+			Name:   "Name",
+			Value:  g.Name,
+			Inline: true,
+		},
+		&discordgo.MessageEmbedField{
+			Name:   "Members",
+			Value:  strconv.Itoa(g.MemberCount),
+			Inline: true,
+		},
+		&discordgo.MessageEmbedField{
+			Name:   "Owner",
+			Value:  "<@165813432216584192>",
 			Inline: false,
 		},
 	}

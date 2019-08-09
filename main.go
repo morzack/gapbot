@@ -32,7 +32,7 @@ func main() {
 		return
 	}
 
-	fmt.Printf("Bot launched. Send interrupt to exit")
+	fmt.Printf("Bot launched. Send interrupt to exit ")
 	fmt.Printf("invite link: https://discordapp.com/oauth2/authorize?client_id=%s&scope=bot&permissions=8\n", dg.State.User.ID)
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
@@ -49,6 +49,8 @@ func ready(s *discordgo.Session, event *discordgo.Ready) {
 
 // called when a message is created on a channel this has access to
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+	g, _ := s.Guild(m.GuildID)
+	s.State.GuildAdd(g)
 	// ignore all of this bot's messages
 	if m.Author.ID == s.State.User.ID {
 		return
@@ -57,7 +59,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if strings.HasPrefix(m.Content, configData.Prefix) {
 		content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
 
-    if getBotmod(s, m) {
+		if getBotmod(s, m) {
 			AdminCommand(s, m, content[0])
 		} else {
 			UserCommand(s, m, content[0])

@@ -22,6 +22,8 @@ func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 		Avatar(s, m)
 	case "user":
 		UserInfo(s, m)
+	case "server":
+		ServerInfo(s, m)
 	default:
 		DefaultHelp(s, m)
 	}
@@ -111,4 +113,9 @@ func UserInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	s.ChannelMessageSendEmbed(m.ChannelID, getUserEmbed(m.Author, s, g))
+}
+
+func ServerInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
+	g, _ := s.Guild(m.GuildID)
+	s.ChannelMessageSendEmbed(m.ChannelID, getServerEmbed(s, g))
 }
