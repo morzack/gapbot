@@ -99,11 +99,6 @@ func getServerEmbed(s *discordgo.Session, g *discordgo.Guild, u *discordgo.User)
 	}
 	embed.Fields = []*discordgo.MessageEmbedField{
 		&discordgo.MessageEmbedField{
-			Name:   "Name",
-			Value:  g.Name,
-			Inline: false,
-		},
-		&discordgo.MessageEmbedField{
 			Name:   "Members",
 			Value:  strconv.Itoa(g.MemberCount),
 			Inline: false,
