@@ -38,7 +38,8 @@ func getHelpEmbed() *discordgo.MessageEmbed {
 			Value: "`ping` - ping the bot\n" +
 				"`help` - it seems like you figured this one out\n" +
 				"`avatar` `@user` - display an image of your avatar or up to 4 others\n" +
-				"`user` `@user` - display information about a user",
+				"`user` `@user` - display information about a user\n" +
+				"`server` - displays info about the server",
 			Inline: false,
 		},
 	}
@@ -90,10 +91,11 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 }
 
 func getServerEmbed(s *discordgo.Session, g *discordgo.Guild) *discordgo.MessageEmbed {
+	url := EndpointGuildIcon(g.ID, g.Icon)
 	embed := getBaseEmbed()
 	embed.Title = g.Name
 	embed.Image = &discordgo.MessageEmbedImage{
-		URL: g.Icon,
+		URL: url,
 	}
 	embed.Fields = []*discordgo.MessageEmbedField{
 		&discordgo.MessageEmbedField{
