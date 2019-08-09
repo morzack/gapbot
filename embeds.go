@@ -90,7 +90,7 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 	return embed
 }
 
-func getServerEmbed(s *discordgo.Session, g *discordgo.Guild) *discordgo.MessageEmbed {
+func getServerEmbed(s *discordgo.Session, g *discordgo.Guild, u *discordgo.User) *discordgo.MessageEmbed {
 	url := discordgo.EndpointGuildIcon(g.ID, g.Icon)
 	embed := getBaseEmbed()
 	embed.Title = g.Name
@@ -101,16 +101,16 @@ func getServerEmbed(s *discordgo.Session, g *discordgo.Guild) *discordgo.Message
 		&discordgo.MessageEmbedField{
 			Name:   "Name",
 			Value:  g.Name,
-			Inline: true,
+			Inline: false,
 		},
 		&discordgo.MessageEmbedField{
 			Name:   "Members",
 			Value:  strconv.Itoa(g.MemberCount),
-			Inline: true,
+			Inline: false,
 		},
 		&discordgo.MessageEmbedField{
 			Name:   "Owner",
-			Value:  "<@165813432216584192>",
+			Value:  u.Username,
 			Inline: false,
 		},
 	}

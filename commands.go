@@ -117,5 +117,11 @@ func UserInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func ServerInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 	g, _ := s.Guild(m.GuildID)
-	s.ChannelMessageSendEmbed(m.ChannelID, getServerEmbed(s, g))
+	u := m.Author
+	for _, users := range g.Members {
+		if getRole(s, users.User, m.Message, "Server Owner") {
+			u = users.User
+		}
+	}
+	s.ChannelMessageSendEmbed(m.ChannelID, getServerEmbed(s, g, u))
 }
