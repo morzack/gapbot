@@ -13,6 +13,9 @@ import (
 var (
 	configData ConfigData
 	debugMode  = true
+
+	errChannelNotRegistered = errors.New("Channel not yet registered")
+	errChannelRegistered    = errors.New("Channel already registered")
 )
 
 type ConfigData struct {
@@ -53,4 +56,40 @@ func loadConfig() error {
 	}
 
 	return nil
+}
+
+func writeConfig() error {
+	configPath, err := getConfigPath()
+	if err != nil {
+		return err
+	}
+	marshalledJSON, err := json.Marshal(configData)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(configPath, marshalledJSON, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func removeLoggingChannel(channel string) error {
+	for i, channelID := range configData.ChannelsLogging {
+		if channelID == channel {
+			configData.ChannelsLogging = append(configData.ChannelsLogging[:i], configData.ChannelsLogging[i+1:]...) // remove the channel, go doesn't have an easy removal function
+			return writeConfig()
+		}
+	}
+	return errChannelNotRegistered
+}
+
+func addLoggingChannel(channel string) error {
+	for _, channelID := range configData.ChannelsLogging {
+		if channelID == channel {
+			return errChannelRegistered
+		}
+	}
+	configData.ChannelsLogging = append(configData.ChannelsLogging, channel)
+	return writeConfig()
 }
