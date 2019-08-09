@@ -32,6 +32,7 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 	switch command {
 	case "purge":
 		Purge(s, m)
+		logCommand(s, m)
 	case "help":
 		AdminHelp(s, m)
 	default:
