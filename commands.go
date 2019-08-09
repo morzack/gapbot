@@ -34,6 +34,10 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 		Purge(s, m)
 	case "help":
 		AdminHelp(s, m)
+	case "kick":
+		KickUser(s, m)
+	case "ban":
+		BanUser(s, m)
 	default:
 		UserCommand(s, m, command)
 	}
@@ -111,4 +115,46 @@ func UserInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	s.ChannelMessageSendEmbed(m.ChannelID, getUserEmbed(m.Author, s, g))
+}
+
+// RemoveUser -- handle the kick/ban command based on status of param ban
+func RemoveUser(s *discordgo.Session, m *discordgo.MessageCreate, ban bool) {
+	method := "kick"
+	if ban {
+		method = "ban"
+	}
+
+	fields := strings.SplitN(strings.TrimPrefix(m.Content, configData.Prefix), " ", 3)
+	if len(fields) < 3 {
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Please make sure to specify a user and reason when %sing", method))
+		return
+	}
+	reason := fields[2]
+	if len(m.Mentions) < 1 {
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Make sure to specify a user to %s", method))
+		return
+	}
+	user := m.Mentions[0]
+
+	var err error
+	if ban {
+		err = s.GuildBanCreateWithReason(m.GuildID, user.ID, reason, 1)
+	} else {
+		err = s.GuildMemberDeleteWithReason(m.GuildID, user.ID, reason)
+	}
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Unable to %s %s for reason %s", method, user.Mention(), reason))
+		fmt.Printf("Error when %sing user %s, %s", method, user.Mention(), err)
+		return
+	}
+
+	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s was %sed because of reason: %s", user.Mention(), method, reason))
+}
+
+func KickUser(s *discordgo.Session, m *discordgo.MessageCreate) {
+	RemoveUser(s, m, false)
+}
+
+func BanUser(s *discordgo.Session, m *discordgo.MessageCreate) {
+	RemoveUser(s, m, true)
 }

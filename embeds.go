@@ -47,8 +47,10 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 	embed := getHelpEmbed()
 	embed.Title = "Gapbot Commands"
 	embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
-		Name:   "Admin",
-		Value:  "`purge #` - purge a given number of messages (up to 99) from a channel",
+		Name: "Admin",
+		Value: "`purge #` - purge a given number of messages (up to 99) from a channel\n" +
+			"`ban @ reason` - ban [@] for a [reason]\n" +
+			"`kick @ reason` - kick [@] for a [reason]",
 		Inline: false,
 	})
 	return embed

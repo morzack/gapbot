@@ -10,15 +10,6 @@ As of right now there aren't many planned commands.
 If you want to add a suggestion, create an issue or PR, or contact @Valis#7360 or @Patchkat#9990 on Discord.
 The bot is built using [discordgo](https://github.com/bwmarrin/discordgo).
 
-## Commands
-
-| Command | Description |
-| --- | --- |
-| help | get help on the bot |
-| ping | ping the bot |
-| avatar | display your avatar |
-| purge | deletes a certain amount of messages from a channel |
-
 ## Configuration
 The default config is designed to run on a Raspberry Pi that's been set up for bots.
 You will need to configure your system in order to test Gapbot.
