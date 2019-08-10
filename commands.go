@@ -22,6 +22,8 @@ func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 		Avatar(s, m)
 	case "user":
 		UserInfo(s, m)
+	case "server":
+		ServerInfo(s, m)
 	default:
 		DefaultHelp(s, m)
 	}
@@ -99,7 +101,11 @@ func Purge(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 //UserInfo embed command
 func UserInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
-	g, _ := s.Guild(m.GuildID)
+	g, err := s.Guild(m.GuildID)
+	if err != nil {
+		fmt.Printf("Error getting guild: %s", err)
+		return
+	}
 	if len(m.Mentions) > 0 {
 		if len(m.Mentions) > 4 {
 			s.ChannelMessageSend(m.ChannelID, "Make sure to mention less than 5 users")
@@ -111,4 +117,19 @@ func UserInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	s.ChannelMessageSendEmbed(m.ChannelID, getUserEmbed(m.Author, s, g))
+}
+
+func ServerInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
+	g, err := s.Guild(m.GuildID)
+	if err != nil {
+		fmt.Printf("Error getting guild: %s", err)
+		return
+	}
+	for _, users := range g.Members {
+		if getRole(s, users.User, m.Message, "Server Owner") {
+			u := users.User
+			s.ChannelMessageSendEmbed(m.ChannelID, getServerEmbed(s, g, u))
+			break
+		}
+	}
 }
