@@ -96,7 +96,10 @@ func Purge(s *discordgo.Session, m *discordgo.MessageCreate) {
 	for _, element := range messages {
 		messageIDs = append(messageIDs, element.ID)
 	}
-	s.ChannelMessagesBulkDelete(m.ChannelID, messageIDs)
+	err = s.ChannelMessagesBulkDelete(m.ChannelID, messageIDs)
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, "Bot doesn't have permission to do this!")
+	}
 }
 
 //UserInfo embed command
