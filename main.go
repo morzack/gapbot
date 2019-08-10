@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"regexp"
 	"strings"
 	"syscall"
 
@@ -49,14 +50,18 @@ func ready(s *discordgo.Session, event *discordgo.Ready) {
 
 // called when a message is created on a channel this has access to
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	g, _ := s.Guild(m.GuildID)
+	g, err := s.Guild(m.GuildID)
+	if err != nil {
+		fmt.Printf("Error getting guild: %s", err)
+	}
 	s.State.GuildAdd(g)
 	// ignore all of this bot's messages
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
 
-	if strings.Contains(m.Content, "discord.gg/") || strings.Contains(m.Content, "discordapp.com/invite/") {
+	r, _ := regexp.Compile("https*:\\/\\/discord.gg\\/(invite\\/)*[a-zA-Z0-9]{6}")
+	if r.MatchString(m.Content) {
 		err := s.ChannelMessageDelete(m.ChannelID, m.ID)
 		if err != nil {
 			fmt.Printf("Failed to delete message: %s", err)
