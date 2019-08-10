@@ -7,7 +7,7 @@ import (
 )
 
 func logCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
-	message := fmt.Sprintf("%s ran: `%s` in <#%s>", m.Author.Mention(), m.Content, m.ChannelID)
+	message := fmt.Sprintf("%s ran: \"%s\" in <#%s>", m.Author.Mention(), m.Content, m.ChannelID)
 	postToLogs(s, message)
 }
 

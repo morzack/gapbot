@@ -38,12 +38,14 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 	case "removelog":
 		RemoveLoggingChannelCommand(s, m)
 		logCommand(s, m)
-	case "help":
-		AdminHelp(s, m)
 	case "kick":
 		KickUser(s, m)
+		logCommand(s, m)
 	case "ban":
 		BanUser(s, m)
+		logCommand(s, m)
+	case "help":
+		AdminHelp(s, m)
 	default:
 		UserCommand(s, m, command)
 	}
@@ -161,6 +163,15 @@ func RemoveUser(s *discordgo.Session, m *discordgo.MessageCreate, ban bool) {
 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Unable to %s %s for reason %s", method, user.Mention(), reason))
 		fmt.Printf("Error when %sing user %s, %s", method, user.Mention(), err)
 		return
+	}
+
+	prevMessage, err := s.ChannelMessages(m.ChannelID, 1, "", "", "")
+	if err != nil {
+		fmt.Printf("Error deleting previous message: %s", err)
+	}
+	err = s.ChannelMessageDelete(m.ChannelID, prevMessage[0].ID)
+	if err != nil {
+		fmt.Printf("Error deleting previous message: %s", err)
 	}
 
 	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s was %sed because of reason: %s", user.Mention(), method, reason))
