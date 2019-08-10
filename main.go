@@ -56,6 +56,14 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	if strings.Contains(m.Content, "discord.gg/") || strings.Contains(m.Content, "discordapp.com/invite/") {
+		err := s.ChannelMessageDelete(m.ChannelID, m.ID)
+		if err != nil {
+			fmt.Printf("Failed to delete message: %s", err)
+			return
+		}
+	}
+
 	if strings.HasPrefix(m.Content, configData.Prefix) {
 		content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
 
