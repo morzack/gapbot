@@ -98,7 +98,9 @@ func Purge(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	err = s.ChannelMessagesBulkDelete(m.ChannelID, messageIDs)
 	if err != nil {
-		s.ChannelMessageSend(m.ChannelID, "Bot doesn't have permission to do this!")
+		fmt.Printf("Error deleting messages in channel %s: %s", m.ChannelID, err)
+		s.ChannelMessageSend(m.ChannelID, "Unable to delete messages. Please check permissions and try again")
+		return
 	}
 }
 
@@ -128,11 +130,10 @@ func ServerInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 		fmt.Printf("Error getting guild: %s", err)
 		return
 	}
-	for _, users := range g.Members {
-		if getRole(s, users.User, m.Message, "Server Owner") {
-			u := users.User
-			s.ChannelMessageSendEmbed(m.ChannelID, getServerEmbed(s, g, u))
-			break
-		}
+	guildOwner, err := s.User(g.OwnerID)
+	if err != nil {
+		fmt.Printf("Error getting guild owner: %s", err)
+		return
 	}
+	s.ChannelMessageSendEmbed(m.ChannelID, getServerEmbed(s, g, guildOwner))
 }

@@ -105,7 +105,7 @@ func getServerEmbed(s *discordgo.Session, g *discordgo.Guild, u *discordgo.User)
 		},
 		&discordgo.MessageEmbedField{
 			Name:   "Owner",
-			Value:  u.Username,
+			Value:  u.String(),
 			Inline: false,
 		},
 	}
