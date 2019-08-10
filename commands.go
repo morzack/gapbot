@@ -1,6 +1,3 @@
-// commands.go
-// this file contains all of the commands, but not underlying logic
-
 package main
 
 import (
@@ -22,6 +19,8 @@ func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 		Avatar(s, m)
 	case "user":
 		UserInfo(s, m)
+	case "server":
+		ServerInfo(s, m)
 	default:
 		DefaultHelp(s, m)
 	}
@@ -32,6 +31,13 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 	switch command {
 	case "purge":
 		Purge(s, m)
+		logCommand(s, m)
+	case "addlog":
+		AddLoggingChannelCommand(s, m)
+		logCommand(s, m)
+	case "removelog":
+		RemoveLoggingChannelCommand(s, m)
+		logCommand(s, m)
 	case "help":
 		AdminHelp(s, m)
 	case "kick":
@@ -98,12 +104,21 @@ func Purge(s *discordgo.Session, m *discordgo.MessageCreate) {
 	for _, element := range messages {
 		messageIDs = append(messageIDs, element.ID)
 	}
-	s.ChannelMessagesBulkDelete(m.ChannelID, messageIDs)
+	err = s.ChannelMessagesBulkDelete(m.ChannelID, messageIDs)
+	if err != nil {
+		fmt.Printf("Error deleting messages in channel %s: %s", m.ChannelID, err)
+		s.ChannelMessageSend(m.ChannelID, "Unable to delete messages. Please check permissions and try again")
+		return
+	}
 }
 
 //UserInfo embed command
 func UserInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
-	g, _ := s.Guild(m.GuildID)
+	g, err := s.Guild(m.GuildID)
+	if err != nil {
+		fmt.Printf("Error getting guild: %s", err)
+		return
+	}
 	if len(m.Mentions) > 0 {
 		if len(m.Mentions) > 4 {
 			s.ChannelMessageSend(m.ChannelID, "Make sure to mention less than 5 users")
@@ -157,4 +172,42 @@ func KickUser(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func BanUser(s *discordgo.Session, m *discordgo.MessageCreate) {
 	RemoveUser(s, m, true)
+}
+
+func ServerInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
+	g, err := s.Guild(m.GuildID)
+	if err != nil {
+		fmt.Printf("Error getting guild: %s", err)
+		return
+	}
+	guildOwner, err := s.User(g.OwnerID)
+	if err != nil {
+		fmt.Printf("Error getting guild owner: %s", err)
+		return
+	}
+	s.ChannelMessageSendEmbed(m.ChannelID, getServerEmbed(s, g, guildOwner))
+}
+
+func AddLoggingChannelCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	err := addLoggingChannel(m.ChannelID)
+	if err == nil {
+		s.ChannelMessageSend(m.ChannelID, "This channel will now be used for logging")
+	} else if err == errChannelRegistered {
+		s.ChannelMessageSend(m.ChannelID, "This channel is already set up for logging")
+	} else {
+		s.ChannelMessageSend(m.ChannelID, "There was an error while setting up this channel for logging")
+		fmt.Printf("Error while configuring %s for logging: %s", m.ChannelID, err)
+	}
+}
+
+func RemoveLoggingChannelCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	err := removeLoggingChannel(m.ChannelID)
+	if err == nil {
+		s.ChannelMessageSend(m.ChannelID, "This channel will no longer be used for logging")
+	} else if err == errChannelNotRegistered {
+		s.ChannelMessageSend(m.ChannelID, "This channel has not yet been configured for logging")
+	} else {
+		s.ChannelMessageSend(m.ChannelID, "There was an error while removing this channel's logging status")
+		fmt.Printf("Error while removing %s from logging: %s", m.ChannelID, err)
+	}
 }

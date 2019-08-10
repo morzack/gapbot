@@ -6,22 +6,22 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func getBotmod(s *discordgo.Session, m *discordgo.MessageCreate) bool {
+func getRole(s *discordgo.Session, u *discordgo.User, m *discordgo.Message, roleName string) bool {
 	// see what the user permission level is
-	author, err := s.GuildMember(m.GuildID, m.Author.ID)
+	roles, err := s.GuildRoles(m.GuildID)
 	if err != nil {
-		fmt.Printf("Unable to get author data: %s", err)
+		fmt.Printf("Error getting roles: %s", err)
 		return false
 	}
-	modroles, err := s.GuildRoles(m.GuildID)
+	mem, err := s.GuildMember(m.GuildID, u.ID)
 	if err != nil {
-		fmt.Printf("Error querying mod roles: %s", err)
+		fmt.Printf("Error getting members: %s", err)
 		return false
 	}
-	for _, role := range modroles {
-		if role.Name == configData.ModRoleName {
+	for _, role := range roles {
+		if role.Name == roleName {
 			// check and see if user has role
-			for _, v := range author.Roles {
+			for _, v := range mem.Roles {
 				if role.ID == v {
 					return true
 				}
@@ -29,4 +29,16 @@ func getBotmod(s *discordgo.Session, m *discordgo.MessageCreate) bool {
 		}
 	}
 	return false
+}
+
+func getBotmod(s *discordgo.Session, m *discordgo.MessageCreate) bool {
+	return getRole(s, m.Author, m.Message, configData.ModRoleName)
+}
+
+func getOwner(s *discordgo.Session, u *discordgo.User, m *discordgo.Message) (bool, error) {
+	guild, err := s.Guild(m.GuildID)
+	if err != nil {
+		return false, err
+	}
+	return guild.OwnerID == u.ID, nil
 }

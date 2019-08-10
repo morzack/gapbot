@@ -1,9 +1,8 @@
-// embeds.go
-// creates various embeds
-
 package main
 
 import (
+	"strconv"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -36,7 +35,8 @@ func getHelpEmbed() *discordgo.MessageEmbed {
 			Value: "`ping` - ping the bot\n" +
 				"`help` - it seems like you figured this one out\n" +
 				"`avatar` `@user` - display an image of your avatar or up to 4 others\n" +
-				"`user` `@user` - display information about a user",
+				"`user` `@user` - display information about a user\n" +
+				"`server` - displays info about the server",
 			Inline: false,
 		},
 	}
@@ -50,7 +50,9 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 		Name: "Admin",
 		Value: "`purge #` - purge a given number of messages (up to 99) from a channel\n" +
 			"`ban @ reason` - ban [@] for a [reason]\n" +
-			"`kick @ reason` - kick [@] for a [reason]",
+			"`kick @ reason` - kick [@] for a [reason]\n" +
+			"`addlog` - configure a channel to be used for logging\n" +
+			"`removelog` - stop using a channel for logging",
 		Inline: false,
 	})
 	return embed
@@ -83,6 +85,28 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 		&discordgo.MessageEmbedField{
 			Name:   "Joined the server",
 			Value:  t,
+			Inline: false,
+		},
+	}
+	return embed
+}
+
+func getServerEmbed(s *discordgo.Session, g *discordgo.Guild, u *discordgo.User) *discordgo.MessageEmbed {
+	url := discordgo.EndpointGuildIcon(g.ID, g.Icon)
+	embed := getBaseEmbed()
+	embed.Title = g.Name
+	embed.Thumbnail = &discordgo.MessageEmbedThumbnail{
+		URL: url,
+	}
+	embed.Fields = []*discordgo.MessageEmbedField{
+		&discordgo.MessageEmbedField{
+			Name:   "Members",
+			Value:  strconv.Itoa(g.MemberCount),
+			Inline: false,
+		},
+		&discordgo.MessageEmbedField{
+			Name:   "Owner",
+			Value:  u.String(),
 			Inline: false,
 		},
 	}
