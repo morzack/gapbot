@@ -29,7 +29,7 @@ func getAvatarEmbed(user *discordgo.User) *discordgo.MessageEmbed {
 	return embed
 }
 
-func getHelpEmbed() *discordgo.MessageEmbed {
+func getDMHelpEmbed() *discordgo.MessageEmbed {
 	embed := getBaseEmbed()
 	embed.Title = "Gapbot Commands"
 	embed.Fields = []*discordgo.MessageEmbedField{
@@ -37,17 +37,27 @@ func getHelpEmbed() *discordgo.MessageEmbed {
 			Name: "Basic",
 			Value: "`ping` - ping the bot\n" +
 				"`help` - it seems like you figured this one out\n" +
-				"`avatar` `@user` - display an image of your avatar or up to 4 others\n" +
-				"`user` `@user` - display information about a user\n" +
-				"`server` - displays info about the server",
+				"`avatar` `@user` - display an image of your avatar or up to 4 others\n",
 			Inline: false,
 		},
 	}
 	return embed
 }
 
+func getServerHelpEmbed() *discordgo.MessageEmbed {
+	embed := getDMHelpEmbed()
+	embed.Title = "Gapbot Commands"
+	embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+		Name: "Server",
+		Value: "`user` `@user` - display information about a user\n" +
+			"`server` - displays info about the server",
+		Inline: false,
+	})
+	return embed
+}
+
 func getAdminHelpEmbed() *discordgo.MessageEmbed {
-	embed := getHelpEmbed()
+	embed := getServerHelpEmbed()
 	embed.Title = "Gapbot Commands"
 	embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
 		Name: "Admin",
