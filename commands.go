@@ -34,6 +34,13 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 	switch command {
 	case "purge":
 		Purge(s, m)
+		logCommand(s, m)
+	case "addlog":
+		AddLoggingChannelCommand(s, m)
+		logCommand(s, m)
+	case "removelog":
+		RemoveLoggingChannelCommand(s, m)
+		logCommand(s, m)
 	case "help":
 		AdminHelp(s, m)
 	default:
@@ -136,4 +143,28 @@ func ServerInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	s.ChannelMessageSendEmbed(m.ChannelID, getServerEmbed(s, g, guildOwner))
+}
+
+func AddLoggingChannelCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	err := addLoggingChannel(m.ChannelID)
+	if err == nil {
+		s.ChannelMessageSend(m.ChannelID, "This channel will now be used for logging")
+	} else if err == errChannelRegistered {
+		s.ChannelMessageSend(m.ChannelID, "This channel is already set up for logging")
+	} else {
+		s.ChannelMessageSend(m.ChannelID, "There was an error while setting up this channel for logging")
+		fmt.Printf("Error while configuring %s for logging: %s", m.ChannelID, err)
+	}
+}
+
+func RemoveLoggingChannelCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	err := removeLoggingChannel(m.ChannelID)
+	if err == nil {
+		s.ChannelMessageSend(m.ChannelID, "This channel will no longer be used for logging")
+	} else if err == errChannelNotRegistered {
+		s.ChannelMessageSend(m.ChannelID, "This channel has not yet been configured for logging")
+	} else {
+		s.ChannelMessageSend(m.ChannelID, "There was an error while removing this channel's logging status")
+		fmt.Printf("Error while removing %s from logging: %s", m.ChannelID, err)
+	}
 }
