@@ -22,6 +22,8 @@ func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 		Avatar(s, m)
 	case "user":
 		UserInfo(s, m)
+	case "server":
+		ServerInfo(s, m)
 	default:
 		DefaultHelp(s, m)
 	}
@@ -94,12 +96,21 @@ func Purge(s *discordgo.Session, m *discordgo.MessageCreate) {
 	for _, element := range messages {
 		messageIDs = append(messageIDs, element.ID)
 	}
-	s.ChannelMessagesBulkDelete(m.ChannelID, messageIDs)
+	err = s.ChannelMessagesBulkDelete(m.ChannelID, messageIDs)
+	if err != nil {
+		fmt.Printf("Error deleting messages in channel %s: %s", m.ChannelID, err)
+		s.ChannelMessageSend(m.ChannelID, "Unable to delete messages. Please check permissions and try again")
+		return
+	}
 }
 
 //UserInfo embed command
 func UserInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
-	g, _ := s.Guild(m.GuildID)
+	g, err := s.Guild(m.GuildID)
+	if err != nil {
+		fmt.Printf("Error getting guild: %s", err)
+		return
+	}
 	if len(m.Mentions) > 0 {
 		if len(m.Mentions) > 4 {
 			s.ChannelMessageSend(m.ChannelID, "Make sure to mention less than 5 users")
@@ -111,4 +122,18 @@ func UserInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	s.ChannelMessageSendEmbed(m.ChannelID, getUserEmbed(m.Author, s, g))
+}
+
+func ServerInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
+	g, err := s.Guild(m.GuildID)
+	if err != nil {
+		fmt.Printf("Error getting guild: %s", err)
+		return
+	}
+	guildOwner, err := s.User(g.OwnerID)
+	if err != nil {
+		fmt.Printf("Error getting guild owner: %s", err)
+		return
+	}
+	s.ChannelMessageSendEmbed(m.ChannelID, getServerEmbed(s, g, guildOwner))
 }
