@@ -60,7 +60,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	r, _ := regexp.Compile("https*:\\/\\/discord.gg\\/(invite\\/)*[a-zA-Z0-9]{6}")
 	if !isDM && r.MatchString(m.Content) {
 		err := s.ChannelMessageDelete(m.ChannelID, m.ID)
-		postToLogs(s, fmt.Sprintf("Deleted server invite in message: `%s` by %s", m.ContentWithMentionsReplaced(), m.Author.Mention()))
+		logServerInvite(s, m)
 		if err != nil {
 			fmt.Printf("Failed to delete invite %s: %s", m.Content, err)
 			return
