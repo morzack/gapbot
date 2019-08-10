@@ -103,11 +103,11 @@ func getServerEmbed(s *discordgo.Session, g *discordgo.Guild, u *discordgo.User)
 			Value:  strconv.Itoa(g.MemberCount),
 			Inline: false,
 		},
-		// &discordgo.MessageEmbedField{
-		// 	Name:   "Owner",
-		// 	Value:  u.Username,
-		// 	Inline: false,
-		// },
+		&discordgo.MessageEmbedField{
+			Name:   "Owner",
+			Value:  u.Username,
+			Inline: false,
+		},
 	}
 	return embed
 }
