@@ -11,21 +11,31 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-// process commands as normal user
-func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string) {
+// process commands that can only be run in dms
+func DMCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string) {
 	switch command {
 	case "help":
-		Help(s, m)
+		DMHelp(s, m)
 	case "ping":
 		Ping(s, m)
 	case "avatar":
 		Avatar(s, m)
+	default:
+		DefaultHelp(s, m)
+	}
+}
+
+// process commands as normal user
+func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string) {
+	switch command {
+	case "help":
+		ServerHelp(s, m)
 	case "user":
 		UserInfo(s, m)
 	case "server":
 		ServerInfo(s, m)
 	default:
-		DefaultHelp(s, m)
+		DMCommand(s, m, command)
 	}
 }
 
@@ -48,9 +58,14 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 	}
 }
 
-//Help command
-func Help(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSendEmbed(m.ChannelID, getHelpEmbed())
+//DMHelp
+func DMHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSendEmbed(m.ChannelID, getDMHelpEmbed())
+}
+
+//ServerHelp command
+func ServerHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSendEmbed(m.ChannelID, getServerHelpEmbed())
 }
 
 func AdminHelp(s *discordgo.Session, m *discordgo.MessageCreate) {

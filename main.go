@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"regexp"
 	"strings"
 	"syscall"
 
@@ -49,17 +50,28 @@ func ready(s *discordgo.Session, event *discordgo.Ready) {
 
 // called when a message is created on a channel this has access to
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	g, _ := s.Guild(m.GuildID)
-	s.State.GuildAdd(g)
 	// ignore all of this bot's messages
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
 
+	isDM := m.GuildID == ""
+
+	r, _ := regexp.Compile("https*:\\/\\/discord.gg\\/(invite\\/)*[a-zA-Z0-9]{6}")
+	if !isDM && r.MatchString(m.Content) {
+		err := s.ChannelMessageDelete(m.ChannelID, m.ID)
+		postToLogs(s, fmt.Sprintf("Deleted server invite in message: `%s` by %s", m.ContentWithMentionsReplaced(), m.Author.Mention()))
+		if err != nil {
+			fmt.Printf("Failed to delete invite %s: %s", m.Content, err)
+			return
+		}
+	}
+
 	if strings.HasPrefix(m.Content, configData.Prefix) {
 		content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
-
-		if getBotmod(s, m) {
+		if isDM {
+			DMCommand(s, m, content[0])
+		} else if getBotmod(s, m) {
 			AdminCommand(s, m, content[0])
 		} else {
 			UserCommand(s, m, content[0])
