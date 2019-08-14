@@ -1,6 +1,3 @@
-// embeds.go
-// creates various embeds
-
 package main
 
 import (
@@ -37,7 +34,9 @@ func getDMHelpEmbed() *discordgo.MessageEmbed {
 			Name: "Basic",
 			Value: "`ping` - ping the bot\n" +
 				"`help` - it seems like you figured this one out\n" +
-				"`avatar` `@user` - display an image of your avatar or up to 4 others\n",
+				"`avatar @` - display [@]'s avatar\n" +
+				"`user @` - display [@]'s user info\n" +
+				"`server` - display the server's info",
 			Inline: false,
 		},
 	}
@@ -61,8 +60,10 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 	embed.Title = "Gapbot Commands"
 	embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
 		Name: "Admin",
-		Value: "`purge #` - purge a given number of messages (up to 99) from a channel\n" +
-			"`addlog` - configure a channel to be used for logging\n" +
+		Value: "`purge #` - purge [#] messages (up to 99)\n" +
+			"`ban @ reason` - ban [@] for a [reason]\n" +
+			"`kick @ reason` - kick [@] for a [reason]\n" +
+			"`addlog` - start using a channel for logging\n" +
 			"`removelog` - stop using a channel for logging",
 		Inline: false,
 	})
