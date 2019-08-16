@@ -46,7 +46,7 @@ func getServerHelpEmbed() *discordgo.MessageEmbed {
 	embed.Title = "Gapbot Commands"
 	embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
 		Name: "Server",
-		Value: "`user @` - display information about a user\n" +
+		Value: "`user @` - display [@]'s user info\n" +
 			"`server` - displays info about the server",
 		Inline: false,
 	})
