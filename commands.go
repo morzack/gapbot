@@ -31,6 +31,8 @@ func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 		UserInfo(s, m)
 	case "server":
 		ServerInfo(s, m)
+	case "email":
+		SendEmail(m)
 	default:
 		DMCommand(s, m, command)
 	}
