@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"regexp"
@@ -27,6 +28,7 @@ func main() {
 
 	dg.AddHandler(messageCreate)
 	dg.AddHandler(ready)
+	dg.AddHandler(GuildCreate)
 	err = dg.Open()
 	if err != nil {
 		fmt.Printf("Error opening connection: %s", err)
@@ -46,6 +48,26 @@ func main() {
 // called when discord sends the ready state
 func ready(s *discordgo.Session, event *discordgo.Ready) {
 	s.UpdateStatus(0, fmt.Sprintf("Type %shelp", configData.Prefix))
+}
+
+func GuildCreate(s *discordgo.Session, g *discordgo.Guild) {
+	if len(g.ID) != 0 {
+		for _, member := range g.Members {
+			for _, user := range configData.Users {
+				if !member.User.Bot {
+					if member.User.ID == user {
+						continue
+					} else {
+						channel, err := s.UserChannelCreate(member.User.ID)
+						if err != nil {
+							log.Printf("Error creating channel: %s", err)
+						}
+						s.ChannelMessageSend(channel.ID, "Please enter the code that has been emailed to you.")
+					}
+				}
+			}
+		}
+	}
 }
 
 // called when a message is created on a channel this has access to

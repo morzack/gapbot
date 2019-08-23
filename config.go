@@ -3,6 +3,7 @@
 package main
 
 import (
+	"github.com/bwmarrin/discordgo"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -26,6 +27,8 @@ type ConfigData struct {
 	ChannelsLogging []string `json:"channels-logging"`
 	Username        string   `json:"username"`
 	Password        string   `json:"password"`
+	Values          []int    `json:"tfa-values"`
+	Users           []string `json:"users"`
 }
 
 func getConfigPath() (string, error) {
@@ -93,5 +96,10 @@ func addLoggingChannel(channel string) error {
 		}
 	}
 	configData.ChannelsLogging = append(configData.ChannelsLogging, channel)
+	return writeConfig()
+}
+
+func registerUser(u *discordgo.User) error {
+	configData.ChannelsLogging = append(configData.ChannelsLogging, u.ID)
 	return writeConfig()
 }
