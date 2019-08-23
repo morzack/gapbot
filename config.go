@@ -3,12 +3,13 @@
 package main
 
 import (
-	"github.com/bwmarrin/discordgo"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 var (
@@ -17,6 +18,7 @@ var (
 
 	errChannelNotRegistered = errors.New("Channel not yet registered")
 	errChannelRegistered    = errors.New("Channel already registered")
+	errUserRegistered       = errors.New("User is already registered")
 )
 
 type ConfigData struct {
@@ -100,6 +102,11 @@ func addLoggingChannel(channel string) error {
 }
 
 func registerUser(u *discordgo.User) error {
-	configData.ChannelsLogging = append(configData.ChannelsLogging, u.ID)
+	for _, user := range configData.Users {
+		if user == u.ID {
+			return errUserRegistered
+		}
+	}
+	configData.Users = append(configData.Users, u.ID)
 	return writeConfig()
 }
