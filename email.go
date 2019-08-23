@@ -27,9 +27,12 @@ func RegisterUsers(s *discordgo.Session, g *discordgo.Guild) {
 					s.ChannelMessageSend(channel.ID, "Please enter your first and last name, as they appear in your email address")
 					s.AddHandlerOnce(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 						if len(m.GuildID) == 0 {
-							content := strings.Fields(m.Content)
-							log.Printf(content[0] + content[1])
-							SendEmail(m)
+							if !m.Author.Bot {
+								log.Printf("Got second message!" + strconv.Itoa(len(m.GuildID)))
+								content := strings.Fields(m.Content)
+								log.Printf("Name entered: " + content[0] + content[1])
+								SendEmail(m)
+							}
 						}
 					})
 				}
