@@ -17,8 +17,8 @@ func RegisterUsers(s *discordgo.Session, g *discordgo.Guild) {
 			log.Printf("Username: " + member.User.Username)
 			if !member.User.Bot {
 				log.Printf("not a bot!")
-				err := registerUser(member.User)
-				if err == nil {
+				reg := IsUserRegistered(member.User)
+				if !reg {
 					log.Printf("not registered!")
 					channel, err := s.UserChannelCreate(member.User.ID)
 					if err != nil {
@@ -26,13 +26,18 @@ func RegisterUsers(s *discordgo.Session, g *discordgo.Guild) {
 					}
 					s.ChannelMessageSend(channel.ID, "Please enter your first and last name, as they appear in your email address")
 					s.AddHandlerOnce(func(s *discordgo.Session, m *discordgo.MessageCreate) {
-						if len(m.GuildID) == 0 {
-							if !m.Author.Bot {
-								log.Printf("Got second message!" + strconv.Itoa(len(m.GuildID)))
-								content := strings.Fields(m.Content)
-								log.Printf("Name entered: " + content[0] + content[1])
-								SendEmail(m)
-							}
+						c, _ := s.Channel(m.ChannelID)
+						if !m.Author.Bot && c.GuildID == "" {
+							SendEmail(m)
+							s.ChannelMessageSend(channel.ID, "Please enter your first and last name, as they appear in your email address")
+						}
+					})
+					s.AddHandlerOnce(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+						c, _ := s.Channel(m.ChannelID)
+						if !m.Author.Bot && c.GuildID == "" {
+							content := strings.Fields(m.Content)
+							log.Printf("code entered: " + content[0])
+							CheckCode(m.Author, content[0])
 						}
 					})
 				}
@@ -67,10 +72,14 @@ func SendEmail(m *discordgo.MessageCreate) {
 	log.Print("sent")
 }
 
-func TestEmail(s *discordgo.Session, m *discordgo.MessageCreate) {
-	channel, err := s.UserChannelCreate(m.Author.ID)
-	if err != nil {
-		log.Printf("Error creating channel: %s", err)
+func CheckCode(u *discordgo.User, c string) {
+	id, _ := strconv.Atoi(u.ID)
+	code := (configData.Values[0] * int(math.Pow(float64(id), 2))) + (configData.Values[1] * id) + configData.Values[2]
+	if c == strconv.Itoa(code) {
+		log.Printf("Registering user!")
+		err := RegisterUser(u)
+		if err != nil {
+			log.Printf("Error adding user: %s", err)
+		}
 	}
-	s.ChannelMessageSend(channel.ID, "Please enter the code that has been emailed to you.")
 }

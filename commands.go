@@ -31,8 +31,6 @@ func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 		UserInfo(s, m)
 	case "server":
 		ServerInfo(s, m)
-	case "email":
-		TestEmail(s, m)
 	default:
 		DMCommand(s, m, command)
 	}
@@ -56,7 +54,6 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 	case "register":
 		g, _ := s.Guild(m.GuildID)
 		RegisterUsers(s, g)
-		logCommand(s, m)
 	case "ban":
 		BanUser(s, m)
 		logCommand(s, m)

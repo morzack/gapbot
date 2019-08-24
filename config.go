@@ -101,7 +101,16 @@ func addLoggingChannel(channel string) error {
 	return writeConfig()
 }
 
-func registerUser(u *discordgo.User) error {
+func IsUserRegistered(u *discordgo.User) bool {
+	for _, user := range configData.Users {
+		if user == u.ID {
+			return true
+		}
+	}
+	return false
+}
+
+func RegisterUser(u *discordgo.User) error {
 	for _, user := range configData.Users {
 		if user == u.ID {
 			return errUserRegistered
