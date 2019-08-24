@@ -12,6 +12,7 @@ import (
 )
 
 func RegisterUsers(s *discordgo.Session, g *discordgo.Guild) {
+	var h func()
 	if len(g.ID) != 0 {
 		for _, member := range g.Members {
 			log.Printf("Username: " + member.User.Username)
@@ -24,26 +25,36 @@ func RegisterUsers(s *discordgo.Session, g *discordgo.Guild) {
 					if err != nil {
 						log.Printf("Error creating channel: %s", err)
 					}
-					s.ChannelMessageSend(channel.ID, "Please enter your first and last name, as they appear in your email address")
-					s.AddHandlerOnce(func(s *discordgo.Session, m *discordgo.MessageCreate) {
-						c, _ := s.Channel(m.ChannelID)
-						if !m.Author.Bot && c.GuildID == "" {
-							SendEmail(m)
-							s.ChannelMessageSend(channel.ID, "Please enter your first and last name, as they appear in your email address")
-						}
-					})
-					s.AddHandlerOnce(func(s *discordgo.Session, m *discordgo.MessageCreate) {
-						c, _ := s.Channel(m.ChannelID)
-						if !m.Author.Bot && c.GuildID == "" {
-							content := strings.Fields(m.Content)
-							log.Printf("code entered: " + content[0])
-							CheckCode(m.Author, content[0])
-						}
-					})
+					RegisteringUser(s, channel, h)
 				}
 			}
 		}
 	}
+}
+
+func RegisteringUser(s *discordgo.Session, channel *discordgo.Channel, h func()) {
+	s.ChannelMessageSend(channel.ID, "Please enter your first and last name, as they appear in your email address")
+	h = s.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+		c, _ := s.Channel(m.ChannelID)
+		if !m.Author.Bot && c.GuildID == "" {
+			SendEmail(m)
+			h()
+			s.ChannelMessageSend(channel.ID, "Please enter the code from your email")
+			h = s.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+				c, _ := s.Channel(m.ChannelID)
+				if !m.Author.Bot && c.GuildID == "" {
+					content := strings.Fields(m.Content)
+					log.Printf("code entered: " + content[0])
+					if CheckCode(m.Author, content[0]) {
+						h()
+						s.ChannelMessageSend(channel.ID, "You have been registered!")
+					} else {
+						RegisteringUser(s, channel, h)
+					}
+				}
+			})
+		}
+	})
 }
 
 func SendEmail(m *discordgo.MessageCreate) {
@@ -72,14 +83,15 @@ func SendEmail(m *discordgo.MessageCreate) {
 	log.Print("sent")
 }
 
-func CheckCode(u *discordgo.User, c string) {
+func CheckCode(u *discordgo.User, c string) bool {
 	id, _ := strconv.Atoi(u.ID)
 	code := (configData.Values[0] * int(math.Pow(float64(id), 2))) + (configData.Values[1] * id) + configData.Values[2]
 	if c == strconv.Itoa(code) {
-		log.Printf("Registering user!")
 		err := RegisterUser(u)
 		if err != nil {
 			log.Printf("Error adding user: %s", err)
+			return false
 		}
 	}
+	return true
 }
