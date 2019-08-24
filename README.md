@@ -25,6 +25,7 @@ The bot can be configured using the following fields:
 | channels-logging | the ids of channels that the bot will log admin command output in |
 | username | email for tfa |
 | password | email password for tfa |
+| users | list of all registered users |
 
 ## Contributions
 Contributions are welcome, but please make it easy for us.
