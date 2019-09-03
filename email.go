@@ -33,26 +33,12 @@ func RegisterUsers(s *discordgo.Session, g *discordgo.Guild) {
 }
 
 func RegisteringUser(s *discordgo.Session, channel *discordgo.Channel, h func()) {
-	s.ChannelMessageSend(channel.ID, "Please enter your first and last name, as they appear in your email address")
+	s.ChannelMessageSend(channel.ID, "Please enter your cary academy email!")
 	h = s.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 		c, _ := s.Channel(m.ChannelID)
 		if !m.Author.Bot && c.GuildID == "" {
-			SendEmail(m)
+			s.ChannelMessageSend()
 			h()
-			s.ChannelMessageSend(channel.ID, "Please enter the code from your email")
-			h = s.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
-				c, _ := s.Channel(m.ChannelID)
-				if !m.Author.Bot && c.GuildID == "" {
-					content := strings.Fields(m.Content)
-					log.Printf("code entered: " + content[0])
-					if CheckCode(m.Author, content[0]) {
-						h()
-						s.ChannelMessageSend(channel.ID, "You have been registered!")
-					} else {
-						RegisteringUser(s, channel, h)
-					}
-				}
-			})
 		}
 	})
 }
