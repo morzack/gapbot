@@ -12,8 +12,6 @@ import (
 )
 
 func main() {
-
-	configData.Users = make(map[string]string)
 	// load config
 	err := loadConfig()
 	if err != nil {

@@ -62,7 +62,8 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 			"`ban @ reason` - ban [@] for a [reason]\n" +
 			"`kick @ reason` - kick [@] for a [reason]\n" +
 			"`addlog` - start using a channel for logging\n" +
-			"`removelog` - stop using a channel for logging",
+			"`removelog` - stop using a channel for logging\n" +
+			"`deregister @` - deregister [@]",
 		Inline: false,
 	})
 	return embed
@@ -109,7 +110,7 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 	embed.Fields = []*discordgo.MessageEmbedField{
 		&discordgo.MessageEmbedField{
 			Name:   "Name",
-			Value:  configData.Users[user.ID],
+			Value:  userData.Users[user.ID],
 			Inline: true,
 		},
 		&discordgo.MessageEmbedField{

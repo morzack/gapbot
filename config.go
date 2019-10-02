@@ -8,9 +8,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
-
-	"github.com/bwmarrin/discordgo"
 )
 
 var (
@@ -23,14 +20,12 @@ var (
 )
 
 type ConfigData struct {
-	DiscordKey      string            `json:"discord-key"`
-	SourceDir       string            `json:"source-dir"`
-	Prefix          string            `json:"bot-prefix"`
-	ModRoleName     string            `json:"mod-role-name"`
-	MemberRole      string            `json:"member-role"`
-	ChannelsLogging []string          `json:"channels-logging"`
-	Users           map[string]string `json:"users"`
-	NameChannel     string            `json:"names-channel"`
+	DiscordKey      string   `json:"discord-key"`
+	SourceDir       string   `json:"source-dir"`
+	Prefix          string   `json:"bot-prefix"`
+	ModRoleName     string   `json:"mod-role-name"`
+	ChannelsLogging []string `json:"channels-logging"`
+	NameChannel     string   `json:"names-channel"`
 }
 
 func getConfigPath() (string, error) {
@@ -42,6 +37,17 @@ func getConfigPath() (string, error) {
 		return fmt.Sprintf("%s/.config/gapbot/config.json", homePath), nil
 	}
 	return fmt.Sprintf("./config.json"), nil
+}
+
+func getUsersPath() (string, error) {
+	if !debugMode {
+		homePath := os.Getenv("HOME")
+		if homePath == "" {
+			return "", errors.New("Use Linux and set your $HOME variable you filthy casual")
+		}
+		return fmt.Sprintf("%s/.config/gapbot/users.json", homePath), nil
+	}
+	return fmt.Sprintf("./users.json"), nil
 }
 
 func loadConfig() error {
@@ -98,25 +104,5 @@ func addLoggingChannel(channel string) error {
 		}
 	}
 	configData.ChannelsLogging = append(configData.ChannelsLogging, channel)
-	return writeConfig()
-}
-
-func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
-	if configData.Users[m.Author.ID] == "" {
-		configData.Users[m.Author.ID] = content[1] + " " + content[2]
-		s.ChannelMessageSend(configData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, configData.Users[m.Author.ID], content[3]))
-	} else {
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are already registered as: %s", configData.Users[m.Author.ID]))
-	}
-	return writeConfig()
-}
-
-func Deregister(s *discordgo.Session, u *discordgo.User) error {
-	if configData.Users[u.ID] == "" {
-		delete(configData.Users, u.ID)
-	} else {
-		fmt.Printf("That user is not registered")
-	}
 	return writeConfig()
 }
