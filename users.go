@@ -16,19 +16,9 @@ var (
 )
 
 type UserData struct {
-	Users map[string]string `json:"users"`
-	Roles [][]string        `json:"roles"`
-}
-
-func getConfigPath() (string, error) {
-	if !debugMode {
-		homePath := os.Getenv("HOME")
-		if homePath == "" {
-			return "", errors.New("Use Linux and set your $HOME variable you filthy casual")
-		}
-		return fmt.Sprintf("%s/.config/gapbot/config.json", homePath), nil
-	}
-	return fmt.Sprintf("./config.json"), nil
+	Users       map[string]string `json:"users"`
+	Roles       [][]string        `json:"roles"`
+	NameChannel string            `json:"names-channel"`
 }
 
 func getUsersPath() (string, error) {
@@ -80,7 +70,7 @@ func writeUsers() error {
 }
 
 func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
-	content := strings.Fields(strings.TrimPrefix(m.Content, userData.Prefix))
+	content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
 	if userData.Users[m.Author.ID] == "" {
 		if len(content) == 4 {
 			userData.Users[m.Author.ID] = strings.Title(content[1]) + " " + strings.Title(content[2])

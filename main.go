@@ -19,6 +19,13 @@ func main() {
 		return
 	}
 
+	// load config
+	err = loadUsers()
+	if err != nil {
+		fmt.Printf("Error getting users: %s", err)
+		return
+	}
+
 	dg, err := discordgo.New("Bot " + configData.DiscordKey)
 	if err != nil {
 		fmt.Printf("Error creating discordgo session: %s", err)

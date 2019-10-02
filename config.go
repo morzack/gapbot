@@ -25,7 +25,6 @@ type ConfigData struct {
 	Prefix          string   `json:"bot-prefix"`
 	ModRoleName     string   `json:"mod-role-name"`
 	ChannelsLogging []string `json:"channels-logging"`
-	NameChannel     string   `json:"names-channel"`
 }
 
 func getConfigPath() (string, error) {
@@ -37,17 +36,6 @@ func getConfigPath() (string, error) {
 		return fmt.Sprintf("%s/.config/gapbot/config.json", homePath), nil
 	}
 	return fmt.Sprintf("./config.json"), nil
-}
-
-func getUsersPath() (string, error) {
-	if !debugMode {
-		homePath := os.Getenv("HOME")
-		if homePath == "" {
-			return "", errors.New("Use Linux and set your $HOME variable you filthy casual")
-		}
-		return fmt.Sprintf("%s/.config/gapbot/users.json", homePath), nil
-	}
-	return fmt.Sprintf("./users.json"), nil
 }
 
 func loadConfig() error {
