@@ -27,10 +27,6 @@ type ConfigData struct {
 	Prefix          string   `json:"bot-prefix"`
 	ModRoleName     string   `json:"mod-role-name"`
 	ChannelsLogging []string `json:"channels-logging"`
-	Username        string   `json:"username"`
-	Password        string   `json:"password"`
-	Values          []int    `json:"tfa-values"`
-	Users           []string `json:"users"`
 }
 
 func getConfigPath() (string, error) {

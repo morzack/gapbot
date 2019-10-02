@@ -51,9 +51,6 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 	case "kick":
 		KickUser(s, m)
 		logCommand(s, m)
-	case "register":
-		g, _ := s.Guild(m.GuildID)
-		RegisterUsers(s, g)
 	case "ban":
 		BanUser(s, m)
 		logCommand(s, m)

@@ -23,9 +23,6 @@ The bot can be configured using the following fields:
 | source-dir | the path to the folder that contains the source code and resources folder |
 | mod-role-name | the role name to determine who can use bot mod commands |
 | channels-logging | the ids of channels that the bot will log admin command output in |
-| username | email for tfa |
-| password | email password for tfa |
-| users | list of all registered users |
 
 ## Contributions
 Contributions are welcome, but please make it easy for us.
