@@ -19,8 +19,6 @@ func main() {
 		return
 	}
 
-	configData.Users = make(map[string]string)
-
 	dg, err := discordgo.New("Bot " + configData.DiscordKey)
 	if err != nil {
 		fmt.Printf("Error creating discordgo session: %s", err)
