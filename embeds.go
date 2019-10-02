@@ -34,7 +34,7 @@ func getDMHelpEmbed() *discordgo.MessageEmbed {
 			Name: "Basic",
 			Value: "`ping` - ping the bot\n" +
 				"`help` - it seems like you figured this one out\n" +
-				"`avatar @` - display [@]'s avatar",
+				"`register name grade` - enter your [name] and [grade] (as a number) to register",
 			Inline: false,
 		},
 	}

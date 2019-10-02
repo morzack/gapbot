@@ -56,17 +56,17 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 		logCommand(s, m)
 	case "help":
 		AdminHelp(s, m)
+	case "register":
+		TempRegister(s, m)
 	default:
 		UserCommand(s, m, command)
 	}
 }
 
-//DMHelp
 func DMHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getDMHelpEmbed())
 }
 
-//ServerHelp command
 func ServerHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getServerHelpEmbed())
 }
@@ -75,17 +75,14 @@ func AdminHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getAdminHelpEmbed())
 }
 
-//DefaultHelp command
 func DefaultHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s isn't a valid command. Use %shelp to learn more", strings.TrimPrefix(m.Content, configData.Prefix), configData.Prefix))
 }
 
-//Ping command
 func Ping(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Pong!")
 }
 
-//Avatar command
 func Avatar(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if len(m.Mentions) > 0 {
 		if len(m.Mentions) > 4 {
@@ -100,7 +97,6 @@ func Avatar(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getAvatarEmbed(m.Author))
 }
 
-//Purge command
 func Purge(s *discordgo.Session, m *discordgo.MessageCreate) {
 	fields := strings.Fields(m.Content)
 	n, err := strconv.Atoi(fields[len(fields)-1])
@@ -129,7 +125,7 @@ func Purge(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
-//UserInfo embed command
+//UserInfo embed
 func UserInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 	g, err := s.Guild(m.GuildID)
 	if err != nil {
@@ -200,6 +196,7 @@ func BanUser(s *discordgo.Session, m *discordgo.MessageCreate) {
 	RemoveUser(s, m, true)
 }
 
+//ServerInfo embed
 func ServerInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 	g, err := s.Guild(m.GuildID)
 	if err != nil {
@@ -235,5 +232,19 @@ func RemoveLoggingChannelCommand(s *discordgo.Session, m *discordgo.MessageCreat
 	} else {
 		s.ChannelMessageSend(m.ChannelID, "There was an error while removing this channel's logging status")
 		fmt.Printf("Error while removing %s from logging: %s", m.ChannelID, err)
+	}
+}
+
+func TempRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
+	guild, err := s.State.Guild(m.GuildID)
+	if err != nil {
+		fmt.Printf("Error getting guild: %s", err)
+	}
+	for _, m := range guild.Members {
+		c, err := s.UserChannelCreate(m.User.ID)
+		if err != nil {
+			fmt.Printf("Error creating channel: %s", err)
+		}
+		s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%s register {your full name} {grade as a number}'", configData.Prefix))
 	}
 }

@@ -25,8 +25,10 @@ func main() {
 		return
 	}
 
+	dg.AddHandler(guildMemberAdd)
 	dg.AddHandler(messageCreate)
 	dg.AddHandler(ready)
+
 	err = dg.Open()
 	if err != nil {
 		fmt.Printf("Error opening connection: %s", err)
@@ -46,6 +48,15 @@ func main() {
 // called when discord sends the ready state
 func ready(s *discordgo.Session, event *discordgo.Ready) {
 	s.UpdateStatus(0, fmt.Sprintf("Type %shelp", configData.Prefix))
+}
+
+// called when a new user enters the server
+func guildMemberAdd(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
+	c, err := s.UserChannelCreate(m.User.ID)
+	if err != nil {
+		fmt.Printf("Error creating channel: %s", err)
+	}
+	s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%s name {your full name}'", configData.Prefix))
 }
 
 // called when a message is created on a channel this has access to
