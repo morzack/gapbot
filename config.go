@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-
-	"github.com/bwmarrin/discordgo"
 )
 
 var (
@@ -95,24 +93,5 @@ func addLoggingChannel(channel string) error {
 		}
 	}
 	configData.ChannelsLogging = append(configData.ChannelsLogging, channel)
-	return writeConfig()
-}
-
-func IsUserRegistered(u *discordgo.User) bool {
-	for _, user := range configData.Users {
-		if user == u.ID {
-			return true
-		}
-	}
-	return false
-}
-
-func RegisterUser(u *discordgo.User) error {
-	for _, user := range configData.Users {
-		if user == u.ID {
-			return errUserRegistered
-		}
-	}
-	configData.Users = append(configData.Users, u.ID)
 	return writeConfig()
 }
