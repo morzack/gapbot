@@ -249,5 +249,10 @@ func TempMassRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 func Register(s *discordgo.Session, m *discordgo.MessageCreate) {
-
+	content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
+	id, err := strconv.Atoi(m.Author.ID)
+	if err != nil {
+		fmt.Printf("Unable to get user ID: %s", err)
+	}
+	configData.Users[id] = content[1] + content[2]
 }

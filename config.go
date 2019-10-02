@@ -22,11 +22,12 @@ var (
 )
 
 type ConfigData struct {
-	DiscordKey      string   `json:"discord-key"`
-	SourceDir       string   `json:"source-dir"`
-	Prefix          string   `json:"bot-prefix"`
-	ModRoleName     string   `json:"mod-role-name"`
-	ChannelsLogging []string `json:"channels-logging"`
+	DiscordKey      string         `json:"discord-key"`
+	SourceDir       string         `json:"source-dir"`
+	Prefix          string         `json:"bot-prefix"`
+	ModRoleName     string         `json:"mod-role-name"`
+	ChannelsLogging []string       `json:"channels-logging"`
+	Users           map[int]string `json:"users"`
 }
 
 func getConfigPath() (string, error) {
