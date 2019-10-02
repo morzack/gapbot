@@ -236,23 +236,20 @@ func RemoveLoggingChannelCommand(s *discordgo.Session, m *discordgo.MessageCreat
 }
 
 func TempMassRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
+	content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
 	guild, err := s.State.Guild(m.GuildID)
 	if err != nil {
 		fmt.Printf("Error getting guild: %s", err)
 	}
 	for _, m := range guild.Members {
-		c, err := s.UserChannelCreate(m.User.ID)
-		if err != nil {
-			fmt.Printf("Error creating channel: %s", err)
+		if !m.User.Bot {
+			c, err := s.UserChannelCreate(m.User.ID)
+			if err != nil {
+				fmt.Printf("Error creating channel: %s", err)
+			}
+			if configData.Users[content[1]+" "+content[2]] == "" {
+				s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%sregister {your first and last name} {grade as a number}' or ask for '%s help'", configData.Prefix, configData.Prefix))
+			}
 		}
-		s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%s register {your first and last name} {grade as a number}' or ask for '%s help'", configData.Prefix, configData.Prefix))
 	}
-}
-func Register(s *discordgo.Session, m *discordgo.MessageCreate) {
-	content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
-	id, err := strconv.Atoi(m.Author.ID)
-	if err != nil {
-		fmt.Printf("Unable to get user ID: %s", err)
-	}
-	configData.Users[id] = content[1] + content[2]
 }

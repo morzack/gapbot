@@ -19,6 +19,8 @@ func main() {
 		return
 	}
 
+	configData.Users = make(map[string]string)
+
 	dg, err := discordgo.New("Bot " + configData.DiscordKey)
 	if err != nil {
 		fmt.Printf("Error creating discordgo session: %s", err)
@@ -56,7 +58,7 @@ func guildMemberAdd(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 	if err != nil {
 		fmt.Printf("Error creating channel: %s", err)
 	}
-	s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%s register {your first and last name} {grade as a number}' or ask for '%s help'", configData.Prefix, configData.Prefix))
+	s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%sregister {your first and last name} {grade as a number}' or ask for '%s help'", configData.Prefix, configData.Prefix))
 }
 
 // called when a message is created on a channel this has access to
