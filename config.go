@@ -106,6 +106,8 @@ func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	if configData.Users[m.Author.ID] == "" {
 		configData.Users[m.Author.ID] = content[1] + " " + content[2]
 		s.ChannelMessageSend(configData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, configData.Users[m.Author.ID], content[3]))
+	} else {
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are already registered as: %s", configData.Users[m.Author.ID]))
 	}
 	return writeConfig()
 }
