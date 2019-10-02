@@ -111,3 +111,12 @@ func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	}
 	return writeConfig()
 }
+
+func Deregister(s *discordgo.Session, u *discordgo.User) error {
+	if configData.Users[u.ID] == "" {
+		delete(configData.Users, u.ID)
+	} else {
+		fmt.Printf("That user is not registered")
+	}
+	return writeConfig()
+}
