@@ -15,8 +15,8 @@ func DMCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string)
 		DMHelp(s, m)
 	case "ping":
 		Ping(s, m)
-	case "avatar":
-		Avatar(s, m)
+	case "register":
+		Register(s, m)
 	default:
 		DefaultHelp(s, m)
 	}
@@ -57,7 +57,7 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 	case "help":
 		AdminHelp(s, m)
 	case "register":
-		TempRegister(s, m)
+		TempMassRegister(s, m)
 	default:
 		UserCommand(s, m, command)
 	}
@@ -235,7 +235,7 @@ func RemoveLoggingChannelCommand(s *discordgo.Session, m *discordgo.MessageCreat
 	}
 }
 
-func TempRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
+func TempMassRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
 	guild, err := s.State.Guild(m.GuildID)
 	if err != nil {
 		fmt.Printf("Error getting guild: %s", err)
@@ -245,6 +245,9 @@ func TempRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if err != nil {
 			fmt.Printf("Error creating channel: %s", err)
 		}
-		s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%s register {your full name} {grade as a number}'", configData.Prefix))
+		s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%s register {your first and last name} {grade as a number}' or ask for '%s help'", configData.Prefix, configData.Prefix))
 	}
+}
+func Register(s *discordgo.Session, m *discordgo.MessageCreate) {
+
 }

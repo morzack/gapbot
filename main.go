@@ -56,7 +56,7 @@ func guildMemberAdd(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 	if err != nil {
 		fmt.Printf("Error creating channel: %s", err)
 	}
-	s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%s name {your full name}'", configData.Prefix))
+	s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%s register {your first and last name} {grade as a number}' or ask for '%s help'", configData.Prefix, configData.Prefix))
 }
 
 // called when a message is created on a channel this has access to
