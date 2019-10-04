@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -70,12 +71,15 @@ func writeUsers() error {
 
 func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
+	r, _ := regexp.Compile("^(([A-z]+)(\\s+)([A-z]+)(\\s+)(9|1[0-2]))$")
+	regcon := strings.Join(content[1:], " ")
 	if userData.Users[m.Author.ID] == "" {
-		if len(content) == 4 {
-			userData.Users[m.Author.ID] = strings.Title(content[1]) + " " + strings.Title(content[2])
-			s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, userData.Users[m.Author.ID], content[3]))
+		if r.MatchString(regcon) {
+			regarr := strings.Fields(r.FindString(regcon))
+			userData.Users[m.Author.ID] = strings.Title(regarr[0]) + " " + strings.Title(regarr[1])
+			s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, userData.Users[m.Author.ID], regarr[2]))
 		} else {
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are missing something"))
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You entered something wrong.  Don't forget your grade should be 9-12."))
 		}
 	} else {
 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are already registered as: %s", userData.Users[m.Author.ID]))
