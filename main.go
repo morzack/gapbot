@@ -25,6 +25,7 @@ func main() {
 		fmt.Printf("Error getting users: %s", err)
 		return
 	}
+	userData.Users = make(map[string]string)
 
 	dg, err := discordgo.New("Bot " + configData.DiscordKey)
 	if err != nil {
