@@ -32,15 +32,15 @@ func getUsersPath() (string, error) {
 }
 
 func loadUsers() error {
-	configPath, err := getUsersPath()
+	userPath, err := getUsersPath()
 	if err != nil {
 		return err
 	}
-	configFile, err := os.Open(configPath)
+	userFile, err := os.Open(userPath)
 	if err != nil {
 		return err
 	}
-	data, err := ioutil.ReadAll(configFile)
+	data, err := ioutil.ReadAll(userFile)
 	if err != nil {
 		return err
 	}
@@ -53,7 +53,7 @@ func loadUsers() error {
 }
 
 func writeUsers() error {
-	configPath, err := getUsersPath()
+	userPath, err := getUsersPath()
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func writeUsers() error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(configPath, marshalledJSON, 0644)
+	err = ioutil.WriteFile(userPath, marshalledJSON, 0644)
 	if err != nil {
 		return err
 	}
