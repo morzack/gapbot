@@ -17,7 +17,6 @@ var (
 
 type UserData struct {
 	Users       map[string]string `json:"users"`
-	Roles       [][]string        `json:"roles"`
 	NameChannel string            `json:"names-channel"`
 }
 
@@ -33,7 +32,7 @@ func getUsersPath() (string, error) {
 }
 
 func loadUsers() error {
-	configPath, err := getConfigPath()
+	configPath, err := getUsersPath()
 	if err != nil {
 		return err
 	}
@@ -54,7 +53,7 @@ func loadUsers() error {
 }
 
 func writeUsers() error {
-	configPath, err := getConfigPath()
+	configPath, err := getUsersPath()
 	if err != nil {
 		return err
 	}
@@ -75,27 +74,21 @@ func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
 		if len(content) == 4 {
 			userData.Users[m.Author.ID] = strings.Title(content[1]) + " " + strings.Title(content[2])
 			s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, userData.Users[m.Author.ID], content[3]))
-			err := s.GuildMemberRoleAdd(userData.Roles[4][1], m.Author.ID, userData.Roles[4][0])
-			if err != nil {
-				fmt.Printf("Here da error: %s", err)
-			}
-			fmt.Printf("GuildID: %s", userData.Roles[4][1])
 		} else {
 			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are missing something"))
 		}
 	} else {
 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are already registered as: %s", userData.Users[m.Author.ID]))
 	}
-	return writeConfig()
+	return writeUsers()
 }
 
 func Deregister(s *discordgo.Session, u *discordgo.User) error {
 	if userData.Users[u.ID] != "" {
 		delete(userData.Users, u.ID)
-		s.GuildMemberRoleRemove(userData.Roles[4][1], u.ID, userData.Roles[4][0])
 		s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s was removed as a member", u.Username))
 	} else {
 		fmt.Printf("That user is not registered")
 	}
-	return writeConfig()
+	return writeUsers()
 }
