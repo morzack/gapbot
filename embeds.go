@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
@@ -70,34 +71,14 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 
 func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild) *discordgo.MessageEmbed {
 	m, _ := s.GuildMember(g.ID, user.ID)
-	b := "No"
+	b := ""
+	uid := ""
 	if user.Bot {
 		b = "Yes"
-		i, _ := m.JoinedAt.Parse()
-		t := i.Format("02/01/2006 15:04:05 EST")
-		embed := getBaseEmbed()
-		embed.Title = user.String()
-		embed.Image = &discordgo.MessageEmbedImage{
-			URL: user.AvatarURL(""),
-		}
-		embed.Fields = []*discordgo.MessageEmbedField{
-			&discordgo.MessageEmbedField{
-				Name:   "ID",
-				Value:  user.ID,
-				Inline: true,
-			},
-			&discordgo.MessageEmbedField{
-				Name:   "Bot?",
-				Value:  b,
-				Inline: false,
-			},
-			&discordgo.MessageEmbedField{
-				Name:   "Joined the server",
-				Value:  t,
-				Inline: false,
-			},
-		}
-		return embed
+		uid = user.ID
+	} else {
+		b = "No"
+		uid = userData.Users[user.ID]
 	}
 	i, _ := m.JoinedAt.Parse()
 	t := i.Format("02/01/2006 15:04:05 EST")
@@ -108,8 +89,8 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 	}
 	embed.Fields = []*discordgo.MessageEmbedField{
 		&discordgo.MessageEmbedField{
-			Name:   "Name",
-			Value:  userData.Users[user.ID],
+			Name:   "ID",
+			Value:  uid,
 			Inline: true,
 		},
 		&discordgo.MessageEmbedField{
@@ -123,6 +104,7 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 			Inline: false,
 		},
 	}
+	fmt.Printf("%v", embed)
 	return embed
 }
 
