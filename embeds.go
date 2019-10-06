@@ -33,8 +33,7 @@ func getDMHelpEmbed() *discordgo.MessageEmbed {
 		&discordgo.MessageEmbedField{
 			Name: "Basic",
 			Value: "`ping` - ping the bot\n" +
-				"`help` - it seems like you figured this one out\n" +
-				"`avatar @` - display [@]'s avatar",
+				"`help` - it seems like you figured this one out",
 			Inline: false,
 		},
 	}
@@ -62,7 +61,8 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 			"`ban @ reason` - ban [@] for a [reason]\n" +
 			"`kick @ reason` - kick [@] for a [reason]\n" +
 			"`addlog` - start using a channel for logging\n" +
-			"`removelog` - stop using a channel for logging",
+			"`removelog` - stop using a channel for logging\n" +
+			"`deregister @` - deregister [@]",
 		Inline: false,
 	})
 	return embed
@@ -70,9 +70,18 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 
 func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild) *discordgo.MessageEmbed {
 	m, _ := s.GuildMember(g.ID, user.ID)
-	b := "No"
+	b := ""
+	uid := ""
 	if user.Bot {
 		b = "Yes"
+		uid = user.ID
+	} else {
+		b = "No"
+		ok := false
+		uid, ok = userData.Users[user.ID]
+		if !ok {
+			uid = user.ID
+		}
 	}
 	i, _ := m.JoinedAt.Parse()
 	t := i.Format("02/01/2006 15:04:05 EST")
@@ -84,13 +93,13 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 	embed.Fields = []*discordgo.MessageEmbedField{
 		&discordgo.MessageEmbedField{
 			Name:   "ID",
-			Value:  user.ID,
+			Value:  uid,
 			Inline: true,
 		},
 		&discordgo.MessageEmbedField{
 			Name:   "Bot?",
 			Value:  b,
-			Inline: true,
+			Inline: false,
 		},
 		&discordgo.MessageEmbedField{
 			Name:   "Joined the server",
