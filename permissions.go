@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -41,4 +42,14 @@ func getOwner(s *discordgo.Session, u *discordgo.User, m *discordgo.Message) (bo
 		return false, err
 	}
 	return guild.OwnerID == u.ID, nil
+}
+
+func AssignRole(s *discordgo.Session, m *discordgo.MessageCreate) {
+	content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
+	fmt.Printf(content[0])
+}
+
+func RemoveRole(s *discordgo.Session, m *discordgo.MessageCreate) {
+	content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
+	fmt.Printf(content[0])
 }

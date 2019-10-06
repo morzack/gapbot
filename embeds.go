@@ -47,7 +47,9 @@ func getServerHelpEmbed() *discordgo.MessageEmbed {
 	embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
 		Name: "Server",
 		Value: "`user @` - display [@]'s user info\n" +
-			"`server` - displays info about the server",
+			"`server` - displays info about the server\n" +
+			"`addrole` - give yourself a role\n" +
+			"`delrole` - remove a role from yourself",
 		Inline: false,
 	})
 	return embed
@@ -63,7 +65,9 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 			"`kick @ reason` - kick [@] for a [reason]\n" +
 			"`addlog` - start using a channel for logging\n" +
 			"`removelog` - stop using a channel for logging\n" +
-			"`deregister @` - deregister [@]",
+			"`deregister @` - deregister [@]\n" +
+			"`addrole @` - give someone a role\n" +
+			"`delrole @` - remove a role from someone",
 		Inline: false,
 	})
 	return embed
