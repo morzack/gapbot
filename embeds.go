@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/bwmarrin/discordgo"
@@ -78,7 +77,11 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 		uid = user.ID
 	} else {
 		b = "No"
-		uid = userData.Users[user.ID]
+		ok := false
+		uid, ok = userData.Users[user.ID]
+		if !ok {
+			uid = user.ID
+		}
 	}
 	i, _ := m.JoinedAt.Parse()
 	t := i.Format("02/01/2006 15:04:05 EST")
@@ -104,7 +107,6 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 			Inline: false,
 		},
 	}
-	fmt.Printf("%v", embed)
 	return embed
 }
 

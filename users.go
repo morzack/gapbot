@@ -1,11 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"regexp"
 	"strings"
 
@@ -14,6 +11,11 @@ import (
 
 var (
 	userData UserData
+	userFile = "users.json"
+
+	errUserInputInvalid  = errors.New("User input invalid")
+	errUserRegistered    = errors.New("User is already registered")
+	errUserNotRegistered = errors.New("User not yet registered")
 )
 
 type UserData struct {
@@ -21,68 +23,42 @@ type UserData struct {
 	NameChannel string            `json:"names-channel"`
 }
 
-func getUsersPath() (string, error) {
-	if !debugMode {
-		homePath := os.Getenv("HOME")
-		if homePath == "" {
-			return "", errors.New("Use Linux and set your $HOME variable you filthy casual")
-		}
-		return fmt.Sprintf("%s/.config/gapbot/users.json", homePath), nil
-	}
-	return fmt.Sprintf("./users.json"), nil
-}
-
 func loadUsers() error {
-	userPath, err := getUsersPath()
+	err := loadJson(userFile, &userData)
 	if err != nil {
 		return err
 	}
-	userFile, err := os.Open(userPath)
-	if err != nil {
-		return err
-	}
-	data, err := ioutil.ReadAll(userFile)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(data, &userData)
-	if err != nil {
-		return err
+
+	// if user map is empty it needs to not be
+	// i'm going to be honest -- i think this is redundant
+	// but it doesn't hurt so it'll stay in for now
+	if len(userData.Users) == 0 {
+		userData.Users = make(map[string]string)
 	}
 
 	return nil
 }
 
 func writeUsers() error {
-	userPath, err := getUsersPath()
-	if err != nil {
-		return err
-	}
-	marshalledJSON, err := json.Marshal(userData)
-	if err != nil {
-		return err
-	}
-	err = ioutil.WriteFile(userPath, marshalledJSON, 0644)
-	if err != nil {
-		return err
-	}
-	return nil
+	return writeJson(userFile, userData)
 }
 
 func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
-	r, _ := regexp.Compile("^(([A-z]+)(\\s+)([A-z]+)(\\s+)(9|1[0-2]))$")
-	regcon := strings.Join(content[1:], " ")
+	r := regexp.MustCompile(`(?P<first>\w+) (?P<last>\w+) (?P<grade>[6-9]|1[0-2])`)
+	subMatch := r.FindStringSubmatch(strings.Join(content[1:], " "))
+
 	if userData.Users[m.Author.ID] == "" {
-		if r.MatchString(regcon) {
-			regarr := strings.Fields(r.FindString(regcon))
-			userData.Users[m.Author.ID] = strings.Title(regarr[0]) + " " + strings.Title(regarr[1])
-			s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, userData.Users[m.Author.ID], regarr[2]))
+		if subMatch == nil {
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You entered something wrong.  Don't forget your grade should be 6-12."))
+			return errUserInputInvalid
 		} else {
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You entered something wrong.  Don't forget your grade should be 9-12."))
+			userData.Users[m.Author.ID] = fmt.Sprintf("%s %s", strings.Title(subMatch[1]), strings.Title(subMatch[2]))
+			s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, userData.Users[m.Author.ID], subMatch[2]))
 		}
 	} else {
 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are already registered as: %s", userData.Users[m.Author.ID]))
+		return errUserRegistered
 	}
 	return writeUsers()
 }
@@ -93,6 +69,7 @@ func Deregister(s *discordgo.Session, u *discordgo.User) error {
 		s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s was removed as a member", u.Username))
 	} else {
 		fmt.Printf("That user is not registered")
+		return errUserNotRegistered
 	}
 	return writeUsers()
 }

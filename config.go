@@ -3,20 +3,17 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
-	"io/ioutil"
 	"os"
 )
 
 var (
 	configData ConfigData
-	debugMode  = true
+
+	configFile = "config.json"
 
 	errChannelNotRegistered = errors.New("Channel not yet registered")
 	errChannelRegistered    = errors.New("Channel already registered")
-	errUserRegistered       = errors.New("User is already registered")
 )
 
 type ConfigData struct {
@@ -27,52 +24,19 @@ type ConfigData struct {
 	ChannelsLogging []string `json:"channels-logging"`
 }
 
-func getConfigPath() (string, error) {
-	if !debugMode {
-		homePath := os.Getenv("HOME")
-		if homePath == "" {
-			return "", errors.New("Use Linux and set your $HOME variable you filthy casual")
-		}
-		return fmt.Sprintf("%s/.config/gapbot/config.json", homePath), nil
+func getDebugMode() bool {
+	if _, err := os.Stat("./production"); err == nil {
+		return false
 	}
-	return fmt.Sprintf("./config.json"), nil
+	return true
 }
 
 func loadConfig() error {
-	configPath, err := getConfigPath()
-	if err != nil {
-		return err
-	}
-	configFile, err := os.Open(configPath)
-	if err != nil {
-		return err
-	}
-	data, err := ioutil.ReadAll(configFile)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(data, &configData)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return loadJson(configFile, &configData)
 }
 
 func writeConfig() error {
-	configPath, err := getConfigPath()
-	if err != nil {
-		return err
-	}
-	marshalledJSON, err := json.Marshal(configData)
-	if err != nil {
-		return err
-	}
-	err = ioutil.WriteFile(configPath, marshalledJSON, 0644)
-	if err != nil {
-		return err
-	}
-	return nil
+	return writeJson(configFile, configData)
 }
 
 func removeLoggingChannel(channel string) error {
