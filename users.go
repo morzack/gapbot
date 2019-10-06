@@ -45,7 +45,7 @@ func writeUsers() error {
 
 func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
-	r := regexp.MustCompile(`(?P<first>\w+) (?P<last>\w+) (?P<grade>[6-9]|1[0-2])`)
+	r := regexp.MustCompile(`^(?P<first>\w+) (?P<last>\w+) (?P<grade>[6-9]|1[0-2])$`)
 	subMatch := r.FindStringSubmatch(strings.Join(content[1:], " "))
 
 	if userData.Users[m.Author.ID] == "" {
@@ -54,7 +54,7 @@ func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
 			return errUserInputInvalid
 		} else {
 			userData.Users[m.Author.ID] = fmt.Sprintf("%s %s", strings.Title(subMatch[1]), strings.Title(subMatch[2]))
-			s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, userData.Users[m.Author.ID], subMatch[2]))
+			s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, userData.Users[m.Author.ID], subMatch[3]))
 		}
 	} else {
 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are already registered as: %s", userData.Users[m.Author.ID]))
@@ -63,12 +63,13 @@ func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	return writeUsers()
 }
 
-func Deregister(s *discordgo.Session, u *discordgo.User) error {
+func Deregister(s *discordgo.Session, m *discordgo.MessageCreate) error {
+	u := m.Mentions[0]
 	if userData.Users[u.ID] != "" {
 		delete(userData.Users, u.ID)
 		s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s was removed as a member", u.Username))
 	} else {
-		fmt.Printf("That user is not registered")
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s was unable to be deregistered -- not registered in the first place", u.Username))
 		return errUserNotRegistered
 	}
 	return writeUsers()

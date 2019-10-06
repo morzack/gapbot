@@ -60,7 +60,7 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 		TempMassRegister(s, m)
 		logCommand(s, m)
 	case "deregister":
-		Deregister(s, m.Mentions[0])
+		Deregister(s, m)
 		logCommand(s, m)
 	default:
 		UserCommand(s, m, command)
