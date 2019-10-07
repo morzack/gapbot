@@ -276,5 +276,5 @@ func ListRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
 			rs += role.Name + "\n"
 		}
 	}
-	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Here is the list of roles: ``%s``", rs))
+	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Here is the list of roles: ```\n%s```", rs))
 }

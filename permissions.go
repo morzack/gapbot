@@ -62,9 +62,9 @@ func AddDelRole(m *discordgo.MessageCreate, u *discordgo.User, s *discordgo.Sess
 	if err != nil {
 		fmt.Printf("Error getting roles: %s", err)
 	}
-	if rem {
-		for _, role := range rs {
-			if strings.ToLower(role.Name) == r {
+	for _, role := range rs {
+		if strings.ToLower(role.Name) == r {
+			if rem {
 				err := s.GuildMemberRoleRemove(g.ID, u.ID, role.ID)
 				if err != nil {
 					fmt.Printf("Error removing role %s to %s", r, m.Author.Username)
@@ -72,12 +72,7 @@ func AddDelRole(m *discordgo.MessageCreate, u *discordgo.User, s *discordgo.Sess
 					s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Role ``%s`` succesfully removed.", r))
 					return
 				}
-			}
-		}
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Role ``%s`` not found. Please try again or contact an admin.", r))
-	} else {
-		for _, role := range rs {
-			if strings.ToLower(role.Name) == r {
+			} else {
 				err := s.GuildMemberRoleAdd(g.ID, u.ID, role.ID)
 				if err != nil {
 					fmt.Printf("Error adding role %s to %s", r, m.Author.Username)
