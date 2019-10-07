@@ -49,7 +49,8 @@ func getServerHelpEmbed() *discordgo.MessageEmbed {
 			"`server` - displays info about the server\n" +
 			"`addrole` - give yourself a role\n" +
 			"`delrole` - remove a role from yourself\n" +
-			"`roles` - list all roles",
+			"`roles` - list all roles\n" +
+			"`myroles` - list your roles",
 		Inline: false,
 	})
 	return embed

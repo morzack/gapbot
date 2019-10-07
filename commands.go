@@ -38,6 +38,8 @@ func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 		Role(s, m, true)
 	case "roles":
 		ListRoles(s, m)
+	case "myroles":
+		ListMyRoles(s, m)
 	default:
 		DMCommand(s, m, command)
 	}
@@ -280,4 +282,30 @@ func ListRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Here is the list of roles: ```\n%s```", rs))
+}
+
+func ListMyRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
+	mem, err := s.GuildMember(m.GuildID, m.Author.ID)
+	if err != nil {
+		fmt.Printf("Error getting member: %s", err)
+	}
+	roles := mem.Roles
+	sortedroles := make([]*discordgo.Role, len(roles))
+	for i, role := range roles {
+		r, err := s.State.Role(m.GuildID, role)
+		if err != nil {
+			fmt.Printf("Error finding role: %s", err)
+		}
+		sortedroles[i] = r
+	}
+	sort.SliceStable(sortedroles, func(i, j int) bool {
+		return sortedroles[i].Position > sortedroles[j].Position
+	})
+	rs := ""
+	for _, role := range sortedroles {
+		if role.Name != "@everyone" {
+			rs += role.Name + "\n"
+		}
+	}
+	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Here is the list of your roles: ```\n%s```", rs))
 }
