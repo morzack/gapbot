@@ -14,7 +14,6 @@ var (
 
 	errChannelNotRegistered = errors.New("Channel not yet registered")
 	errChannelRegistered    = errors.New("Channel already registered")
-	errUserRegistered       = errors.New("User is already registered")
 )
 
 type ConfigData struct {

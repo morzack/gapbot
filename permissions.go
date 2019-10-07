@@ -37,19 +37,17 @@ func getAdmin(s *discordgo.Session, m *discordgo.MessageCreate) bool {
 }
 
 func Role(s *discordgo.Session, m *discordgo.MessageCreate, rem bool) {
-	content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
-	role := content[1]
 	//Command for admins
 	if getAdmin(s, m) {
 		//If they mention someone
 		if len(m.Mentions) > 0 {
-			AddDelRole(m, m.Mentions[0], s, strings.ToLower(role), rem)
-		} else { // if they don't mention anyone
-			AddDelRole(m, m.Author, s, strings.ToLower(role), rem)
+			role := strings.SplitN(strings.TrimPrefix(m.Content, configData.Prefix), " ", 3)[2]
+			AddDelRole(m, m.Mentions[0], s, role, rem)
+			return
 		}
-	} else { //If not admin
-		AddDelRole(m, m.Author, s, strings.ToLower(role), rem)
 	}
+	role := strings.SplitN(strings.TrimPrefix(m.Content, configData.Prefix), " ", 2)[1]
+	AddDelRole(m, m.Author, s, role, rem)
 }
 
 // need role name
@@ -82,6 +80,6 @@ func AddDelRole(m *discordgo.MessageCreate, u *discordgo.User, s *discordgo.Sess
 				}
 			}
 		}
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Role ``%s`` not found. Please try again or contact an admin.", r))
 	}
+	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Role ``%s`` not found. Please try again or contact an admin.", r))
 }
