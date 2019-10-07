@@ -32,24 +32,61 @@ func getRole(s *discordgo.Session, u *discordgo.User, m *discordgo.Message, role
 	return false
 }
 
-func getBotmod(s *discordgo.Session, m *discordgo.MessageCreate) bool {
+func getAdmin(s *discordgo.Session, m *discordgo.MessageCreate) bool {
 	return getRole(s, m.Author, m.Message, configData.ModRoleName)
 }
 
-func getOwner(s *discordgo.Session, u *discordgo.User, m *discordgo.Message) (bool, error) {
-	guild, err := s.Guild(m.GuildID)
-	if err != nil {
-		return false, err
+func Role(s *discordgo.Session, m *discordgo.MessageCreate, rem bool) {
+	content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
+	role := content[1]
+	//Command for admins
+	if getAdmin(s, m) {
+		//If they mention someone
+		if len(m.Mentions) > 0 {
+			AddDelRole(m, m.Mentions[0], s, strings.ToLower(role), rem)
+		} else { // if they don't mention anyone
+			AddDelRole(m, m.Author, s, strings.ToLower(role), rem)
+		}
+	} else { //If not admin
+		AddDelRole(m, m.Author, s, strings.ToLower(role), rem)
 	}
-	return guild.OwnerID == u.ID, nil
 }
 
-func AssignRole(s *discordgo.Session, m *discordgo.MessageCreate) {
-	content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
-	fmt.Printf(content[0])
-}
-
-func RemoveRole(s *discordgo.Session, m *discordgo.MessageCreate) {
-	content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
-	fmt.Printf(content[0])
+// need role name
+func AddDelRole(m *discordgo.MessageCreate, u *discordgo.User, s *discordgo.Session, r string, rem bool) {
+	g, err := s.Guild(m.GuildID)
+	if err != nil {
+		fmt.Printf("Error getting guild: %s", err)
+	}
+	rs, err := s.GuildRoles(m.GuildID)
+	if err != nil {
+		fmt.Printf("Error getting roles: %s", err)
+	}
+	if rem {
+		for _, role := range rs {
+			if strings.ToLower(role.Name) == r {
+				err := s.GuildMemberRoleRemove(g.ID, u.ID, role.ID)
+				if err != nil {
+					fmt.Printf("Error removing role %s to %s", r, m.Author.Username)
+				} else {
+					s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Role ``%s`` succesfully removed.", r))
+					return
+				}
+			}
+		}
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Role ``%s`` not found. Please try again or contact an admin.", r))
+	} else {
+		for _, role := range rs {
+			if strings.ToLower(role.Name) == r {
+				err := s.GuildMemberRoleAdd(g.ID, u.ID, role.ID)
+				if err != nil {
+					fmt.Printf("Error adding role %s to %s", r, m.Author.Username)
+				} else {
+					s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Role ``%s`` succesfully added.", r))
+					return
+				}
+			}
+		}
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Role ``%s`` not found. Please try again or contact an admin.", r))
+	}
 }

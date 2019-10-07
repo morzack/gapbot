@@ -25,7 +25,6 @@ func main() {
 		fmt.Printf("Error getting users: %s", err)
 		return
 	}
-	userData.Users = make(map[string]string)
 
 	dg, err := discordgo.New("Bot " + configData.DiscordKey)
 	if err != nil {
@@ -85,15 +84,20 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 	}
-
 	if strings.HasPrefix(m.Content, configData.Prefix) {
 		content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
 		if isDM {
 			DMCommand(s, m, content[0])
-		} else if getBotmod(s, m) {
-			AdminCommand(s, m, content[0])
 		} else {
-			UserCommand(s, m, content[0])
+			if userData.Users[m.Author.ID] != "" {
+				if getAdmin(s, m) {
+					AdminCommand(s, m, content[0])
+				} else {
+					UserCommand(s, m, content[0])
+				}
+			} else {
+				s.ChannelMessageSend(m.ChannelID, "You need to register before using the bot in the server!")
+			}
 		}
 	}
 }

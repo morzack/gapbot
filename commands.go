@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -32,9 +33,11 @@ func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 	case "server":
 		ServerInfo(s, m)
 	case "addrole":
-		AssignRole(s, m)
-	case "removerole":
-		RemoveRole(s, m)
+		Role(s, m, false)
+	case "delrole":
+		Role(s, m, true)
+	case "roles":
+		ListRoles(s, m)
 	default:
 		DMCommand(s, m, command)
 	}
@@ -257,4 +260,21 @@ func TempMassRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 		}
 	}
+}
+
+func ListRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
+	roles, err := s.GuildRoles(m.GuildID)
+	sort.SliceStable(roles, func(i, j int) bool {
+		return roles[i].Position > roles[j].Position
+	})
+	rs := ""
+	if err != nil {
+		fmt.Printf("Error getting roles: %s", err)
+	}
+	for _, role := range roles {
+		if role.Name != "@everyone" {
+			rs += role.Name + "\n"
+		}
+	}
+	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Here is the list of roles: ``%s``", rs))
 }

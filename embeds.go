@@ -49,7 +49,8 @@ func getServerHelpEmbed() *discordgo.MessageEmbed {
 		Value: "`user @` - display [@]'s user info\n" +
 			"`server` - displays info about the server\n" +
 			"`addrole` - give yourself a role\n" +
-			"`delrole` - remove a role from yourself",
+			"`delrole` - remove a role from yourself\n" +
+			"`roles` - list all roles",
 		Inline: false,
 	})
 	return embed
@@ -66,8 +67,8 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 			"`addlog` - start using a channel for logging\n" +
 			"`removelog` - stop using a channel for logging\n" +
 			"`deregister @` - deregister [@]\n" +
-			"`addrole @` - give someone a role\n" +
-			"`delrole @` - remove a role from someone",
+			"`addrole [role] @` - give [@] a role\n" +
+			"`delrole [role] @` - remove a role from [@]",
 		Inline: false,
 	})
 	return embed
