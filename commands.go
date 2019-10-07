@@ -63,10 +63,12 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 		logCommand(s, m)
 	case "help":
 		AdminHelp(s, m)
-	case "register":
+	case "massregister":
 		TempMassRegister(s, m)
+		logCommand(s, m)
 	case "deregister":
-		Deregister(s, m.Mentions[0])
+		Deregister(s, m)
+		logCommand(s, m)
 	default:
 		UserCommand(s, m, command)
 	}
@@ -134,7 +136,6 @@ func Purge(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
-//UserInfo embed
 func UserInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 	g, err := s.Guild(m.GuildID)
 	if err != nil {
@@ -154,7 +155,6 @@ func UserInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getUserEmbed(m.Author, s, g))
 }
 
-// RemoveUser -- handle the kick/ban command based on status of param ban
 func RemoveUser(s *discordgo.Session, m *discordgo.MessageCreate, ban bool) {
 	method := "kick"
 	if ban {
@@ -248,33 +248,19 @@ func TempMassRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
 	guild, err := s.State.Guild(m.GuildID)
 	if err != nil {
 		fmt.Printf("Error getting guild: %s", err)
+		return
 	}
 	for _, mem := range guild.Members {
 		if !mem.User.Bot {
 			c, err := s.UserChannelCreate(mem.User.ID)
 			if err != nil {
 				fmt.Printf("Error creating channel: %s", err)
-			}
-			if userData.Users[mem.User.ID] == "" {
-				s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%sregister {your first and last name} {grade as a number}' or ask for '%s help'", configData.Prefix, configData.Prefix))
+			} else if userData.Users[mem.User.ID] == "" {
+				_, err := s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%sregister {your first and last name} {grade as a number}' or ask for '%s help'", configData.Prefix, configData.Prefix))
+				if err != nil {
+					fmt.Printf("Error sending message to user: %s", err)
+				}
 			}
 		}
 	}
-}
-
-func ListRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
-	roles, err := s.GuildRoles(m.GuildID)
-	sort.SliceStable(roles, func(i, j int) bool {
-		return roles[i].Position > roles[j].Position
-	})
-	rs := ""
-	if err != nil {
-		fmt.Printf("Error getting roles: %s", err)
-	}
-	for _, role := range roles {
-		if role.Name != "@everyone" {
-			rs += role.Name + "\n"
-		}
-	}
-	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Here is the list of roles: ```\n%s```", rs))
 }

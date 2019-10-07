@@ -19,7 +19,7 @@ func main() {
 		return
 	}
 
-	// load config
+	// load user config
 	err = loadUsers()
 	if err != nil {
 		fmt.Printf("Error getting users: %s", err)
@@ -62,8 +62,9 @@ func guildMemberAdd(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 	c, err := s.UserChannelCreate(m.User.ID)
 	if err != nil {
 		fmt.Printf("Error creating channel: %s", err)
+		return
 	}
-	s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%sregister {your first and last name} {grade as a number}' or ask for '%s help'", configData.Prefix, configData.Prefix))
+	s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%sregister {first name} {last name} {grade #}'", configData.Prefix))
 }
 
 // called when a message is created on a channel this has access to
