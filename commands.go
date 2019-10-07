@@ -264,3 +264,20 @@ func TempMassRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 	}
 }
+
+func ListRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
+	roles, err := s.GuildRoles(m.GuildID)
+	sort.SliceStable(roles, func(i, j int) bool {
+		return roles[i].Position > roles[j].Position
+	})
+	rs := ""
+	if err != nil {
+		fmt.Printf("Error getting roles: %s", err)
+	}
+	for _, role := range roles {
+		if role.Name != "@everyone" {
+			rs += role.Name + "\n"
+		}
+	}
+	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Here is the list of roles: ```\n%s```", rs))
+}
