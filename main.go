@@ -98,6 +98,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 				}
 			} else {
 				s.ChannelMessageSend(m.ChannelID, "You need to register before using the bot in the server!")
+				s.ChannelMessageSend(m.ChannelID, "Message an admin if you need help.")
 			}
 		}
 	}

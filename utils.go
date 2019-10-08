@@ -21,7 +21,7 @@ func getFileFullPath(filename string) (string, error) {
 	return fmt.Sprintf("./%s", filename), nil
 }
 
-func loadJson(filename string, v interface{}) error {
+func loadJSON(filename string, v interface{}) error {
 	filePath, err := getFileFullPath(filename)
 	if err != nil {
 		return err
@@ -41,7 +41,7 @@ func loadJson(filename string, v interface{}) error {
 	return nil
 }
 
-func writeJson(filename string, v interface{}) error {
+func writeJSON(filename string, v interface{}) error {
 	filePath, err := getFileFullPath(filename)
 	if err != nil {
 		return err
@@ -55,4 +55,13 @@ func writeJson(filename string, v interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func itemInSlice(item string, slice []string) bool {
+	for _, v := range slice {
+		if item == v {
+			return true
+		}
+	}
+	return false
 }

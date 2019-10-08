@@ -2,6 +2,7 @@ package main
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -49,7 +50,7 @@ func getServerHelpEmbed() *discordgo.MessageEmbed {
 			"`server` - displays info about the server\n" +
 			"`addrole` - give yourself a role\n" +
 			"`delrole` - remove a role from yourself\n" +
-			"`roles` - list all roles\n" +
+			"`roles` - list roles available to you\n" +
 			"`myroles` - list your roles",
 		Inline: false,
 	})
@@ -67,10 +68,30 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 			"`addlog` - start using a channel for logging\n" +
 			"`removelog` - stop using a channel for logging\n" +
 			"`deregister @` - deregister [@]\n" +
-			"`addrole @ *role*` - give [@] a [role]\n" +
-			"`delrole @ *role*` - remove a [role] from [@]",
+			"`addrole @ role` - give [@] a [role]\n" +
+			"`delrole @ role` - remove a [role] from [@]",
 		Inline: false,
 	})
+	return embed
+}
+
+func getRolesEmbed(roles []*discordgo.Role) *discordgo.MessageEmbed {
+	embed := getBaseEmbed()
+	// embed.Title = "Available Roles"
+
+	roleNames := []string{}
+	for _, role := range roles {
+		if role.Name != "@everyone" {
+			roleNames = append(roleNames, role.Name)
+		}
+	}
+
+	embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+		Name:   "Available Roles",
+		Value:  "- " + strings.Join(roleNames, "\n- "),
+		Inline: false,
+	})
+
 	return embed
 }
 

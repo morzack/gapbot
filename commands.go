@@ -33,9 +33,9 @@ func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 	case "server":
 		ServerInfo(s, m)
 	case "addrole":
-		Role(s, m, false)
+		AddRole(s, m)
 	case "delrole":
-		Role(s, m, true)
+		DelRole(s, m)
 	case "roles":
 		ListRoles(s, m)
 	case "myroles":
@@ -207,7 +207,6 @@ func BanUser(s *discordgo.Session, m *discordgo.MessageCreate) {
 	RemoveUser(s, m, true)
 }
 
-//ServerInfo embed
 func ServerInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 	g, err := s.Guild(m.GuildID)
 	if err != nil {
@@ -268,26 +267,19 @@ func TempMassRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func ListRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
-	roles, err := s.GuildRoles(m.GuildID)
-	sort.SliceStable(roles, func(i, j int) bool {
-		return roles[i].Position > roles[j].Position
-	})
-	rs := ""
+	roles, err := getAvailableRoles(s, m, m.Author)
 	if err != nil {
-		fmt.Printf("Error getting roles: %s", err)
+		s.ChannelMessageSend(m.ChannelID, "Unable to query roles.")
+		fmt.Printf("Unable to query roles: %s", err)
 	}
-	for _, role := range roles {
-		if role.Name != "@everyone" {
-			rs += role.Name + "\n"
-		}
-	}
-	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Here is the list of roles: ```\n%s```", rs))
+	s.ChannelMessageSendEmbed(m.ChannelID, getRolesEmbed(roles))
 }
 
 func ListMyRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
 	mem, err := s.GuildMember(m.GuildID, m.Author.ID)
 	if err != nil {
 		fmt.Printf("Error getting member: %s", err)
+		return
 	}
 	roles := mem.Roles
 	sortedroles := make([]*discordgo.Role, len(roles))
@@ -295,17 +287,20 @@ func ListMyRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
 		r, err := s.State.Role(m.GuildID, role)
 		if err != nil {
 			fmt.Printf("Error finding role: %s", err)
+			return
 		}
 		sortedroles[i] = r
 	}
 	sort.SliceStable(sortedroles, func(i, j int) bool {
 		return sortedroles[i].Position > sortedroles[j].Position
 	})
-	rs := ""
-	for _, role := range sortedroles {
-		if role.Name != "@everyone" {
-			rs += role.Name + "\n"
-		}
-	}
-	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Here is the list of your roles: ```\n%s```", rs))
+	s.ChannelMessageSendEmbed(m.ChannelID, getRolesEmbed(sortedroles))
+}
+
+func AddRole(s *discordgo.Session, m *discordgo.MessageCreate) {
+	Role(s, m, false)
+}
+
+func DelRole(s *discordgo.Session, m *discordgo.MessageCreate) {
+	Role(s, m, true)
 }

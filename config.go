@@ -17,11 +17,17 @@ var (
 )
 
 type ConfigData struct {
-	DiscordKey      string   `json:"discord-key"`
-	SourceDir       string   `json:"source-dir"`
-	Prefix          string   `json:"bot-prefix"`
-	ModRoleName     string   `json:"mod-role-name"`
-	ChannelsLogging []string `json:"channels-logging"`
+	DiscordKey      string       `json:"discord-key"`
+	SourceDir       string       `json:"source-dir"`
+	Prefix          string       `json:"bot-prefix"`
+	ModRoleName     string       `json:"mod-role-name"`
+	ChannelsLogging []string     `json:"channels-logging"`
+	EnabledRoles    RolesEnabled `json:"roles-enabled"`
+}
+
+type RolesEnabled struct {
+	UserRoles  []string `json:"user"`
+	AdminRoles []string `json:"admin"`
 }
 
 func getDebugMode() bool {
@@ -32,11 +38,11 @@ func getDebugMode() bool {
 }
 
 func loadConfig() error {
-	return loadJson(configFile, &configData)
+	return loadJSON(configFile, &configData)
 }
 
 func writeConfig() error {
-	return writeJson(configFile, configData)
+	return writeJSON(configFile, configData)
 }
 
 func removeLoggingChannel(channel string) error {
