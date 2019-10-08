@@ -85,15 +85,21 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 	}
-
 	if strings.HasPrefix(m.Content, configData.Prefix) {
 		content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
 		if isDM {
 			DMCommand(s, m, content[0])
-		} else if getBotmod(s, m) {
-			AdminCommand(s, m, content[0])
 		} else {
-			UserCommand(s, m, content[0])
+			if userData.Users[m.Author.ID] != "" {
+				if getAdmin(s, m) {
+					AdminCommand(s, m, content[0])
+				} else {
+					UserCommand(s, m, content[0])
+				}
+			} else {
+				s.ChannelMessageSend(m.ChannelID, "You need to register before using the bot in the server!")
+				s.ChannelMessageSend(m.ChannelID, "Message an admin if you need help.")
+			}
 		}
 	}
 }

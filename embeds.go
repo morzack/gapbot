@@ -2,6 +2,7 @@ package main
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -46,7 +47,11 @@ func getServerHelpEmbed() *discordgo.MessageEmbed {
 	embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
 		Name: "Server",
 		Value: "`user @` - display [@]'s user info\n" +
-			"`server` - displays info about the server",
+			"`server` - displays info about the server\n" +
+			"`addrole` - give yourself a role\n" +
+			"`delrole` - remove a role from yourself\n" +
+			"`roles` - list roles available to you\n" +
+			"`myroles` - list your roles",
 		Inline: false,
 	})
 	return embed
@@ -62,9 +67,31 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 			"`kick @ reason` - kick [@] for a [reason]\n" +
 			"`addlog` - start using a channel for logging\n" +
 			"`removelog` - stop using a channel for logging\n" +
-			"`deregister @` - deregister [@]",
+			"`deregister @` - deregister [@]\n" +
+			"`addrole @ role` - give [@] a [role]\n" +
+			"`delrole @ role` - remove a [role] from [@]",
 		Inline: false,
 	})
+	return embed
+}
+
+func getRolesEmbed(roles []*discordgo.Role, title string) *discordgo.MessageEmbed {
+	embed := getBaseEmbed()
+	// embed.Title = "Available Roles"
+
+	roleNames := []string{}
+	for _, role := range roles {
+		if role.Name != "@everyone" {
+			roleNames = append(roleNames, role.Name)
+		}
+	}
+
+	embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+		Name:   title,
+		Value:  "- " + strings.Join(roleNames, "\n- "),
+		Inline: false,
+	})
+
 	return embed
 }
 
@@ -72,15 +99,19 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 	m, _ := s.GuildMember(g.ID, user.ID)
 	b := ""
 	uid := ""
+	idTitle := ""
 	if user.Bot {
 		b = "Yes"
 		uid = user.ID
+		idTitle = "ID"
 	} else {
 		b = "No"
 		ok := false
 		uid, ok = userData.Users[user.ID]
+		idTitle = "Name"
 		if !ok {
 			uid = user.ID
+			idTitle = "ID"
 		}
 	}
 	i, _ := m.JoinedAt.Parse()
@@ -92,7 +123,7 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 	}
 	embed.Fields = []*discordgo.MessageEmbedField{
 		&discordgo.MessageEmbedField{
-			Name:   "ID",
+			Name:   idTitle,
 			Value:  uid,
 			Inline: true,
 		},

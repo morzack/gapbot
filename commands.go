@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -31,6 +32,14 @@ func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 		UserInfo(s, m)
 	case "server":
 		ServerInfo(s, m)
+	case "addrole":
+		AddRole(s, m)
+	case "delrole":
+		DelRole(s, m)
+	case "roles":
+		ListRoles(s, m)
+	case "myroles":
+		ListMyRoles(s, m)
 	default:
 		DMCommand(s, m, command)
 	}
@@ -255,4 +264,44 @@ func TempMassRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
 			}
 		}
 	}
+}
+
+func ListRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
+	roles, err := getAvailableRoles(s, m, m.Author)
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, "Unable to query roles.")
+		fmt.Printf("Unable to query roles: %s", err)
+		return
+	}
+	s.ChannelMessageSendEmbed(m.ChannelID, getRolesEmbed(roles, "Available Roles"))
+}
+
+func ListMyRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
+	mem, err := s.GuildMember(m.GuildID, m.Author.ID)
+	if err != nil {
+		fmt.Printf("Error getting member: %s", err)
+		return
+	}
+	roles := mem.Roles
+	sortedroles := make([]*discordgo.Role, len(roles))
+	for i, role := range roles {
+		r, err := s.State.Role(m.GuildID, role)
+		if err != nil {
+			fmt.Printf("Error finding role: %s", err)
+			return
+		}
+		sortedroles[i] = r
+	}
+	sort.SliceStable(sortedroles, func(i, j int) bool {
+		return sortedroles[i].Position > sortedroles[j].Position
+	})
+	s.ChannelMessageSendEmbed(m.ChannelID, getRolesEmbed(sortedroles, "Your Roles"))
+}
+
+func AddRole(s *discordgo.Session, m *discordgo.MessageCreate) {
+	Role(s, m, false)
+}
+
+func DelRole(s *discordgo.Session, m *discordgo.MessageCreate) {
+	Role(s, m, true)
 }

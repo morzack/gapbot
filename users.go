@@ -24,7 +24,7 @@ type UserData struct {
 }
 
 func loadUsers() error {
-	err := loadJson(userFile, &userData)
+	err := loadJSON(userFile, &userData)
 	if err != nil {
 		return err
 	}
@@ -40,7 +40,7 @@ func loadUsers() error {
 }
 
 func writeUsers() error {
-	return writeJson(userFile, userData)
+	return writeJSON(userFile, userData)
 }
 
 func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
@@ -52,15 +52,13 @@ func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
 		if subMatch == nil {
 			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You entered something wrong.  Don't forget your grade should be 6-12."))
 			return errUserInputInvalid
-		} else {
-			userData.Users[m.Author.ID] = fmt.Sprintf("%s %s", strings.Title(subMatch[1]), strings.Title(subMatch[2]))
-			s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, userData.Users[m.Author.ID], subMatch[3]))
 		}
-	} else {
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are already registered as: %s", userData.Users[m.Author.ID]))
-		return errUserRegistered
+		userData.Users[m.Author.ID] = fmt.Sprintf("%s %s", strings.Title(subMatch[1]), strings.Title(subMatch[2]))
+		s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, userData.Users[m.Author.ID], subMatch[3]))
+		return writeUsers()
 	}
-	return writeUsers()
+	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are already registered as: %s", userData.Users[m.Author.ID]))
+	return errUserRegistered
 }
 
 func Deregister(s *discordgo.Session, m *discordgo.MessageCreate) error {
