@@ -75,7 +75,7 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 	return embed
 }
 
-func getRolesEmbed(roles []*discordgo.Role) *discordgo.MessageEmbed {
+func getRolesEmbed(roles []*discordgo.Role, title string) *discordgo.MessageEmbed {
 	embed := getBaseEmbed()
 	// embed.Title = "Available Roles"
 
@@ -87,7 +87,7 @@ func getRolesEmbed(roles []*discordgo.Role) *discordgo.MessageEmbed {
 	}
 
 	embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
-		Name:   "Available Roles",
+		Name:   title,
 		Value:  "- " + strings.Join(roleNames, "\n- "),
 		Inline: false,
 	})
@@ -99,15 +99,19 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 	m, _ := s.GuildMember(g.ID, user.ID)
 	b := ""
 	uid := ""
+	idTitle := ""
 	if user.Bot {
 		b = "Yes"
 		uid = user.ID
+		idTitle = "ID"
 	} else {
 		b = "No"
 		ok := false
 		uid, ok = userData.Users[user.ID]
+		idTitle = "Name"
 		if !ok {
 			uid = user.ID
+			idTitle = "ID"
 		}
 	}
 	i, _ := m.JoinedAt.Parse()
@@ -119,7 +123,7 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 	}
 	embed.Fields = []*discordgo.MessageEmbedField{
 		&discordgo.MessageEmbedField{
-			Name:   "ID",
+			Name:   idTitle,
 			Value:  uid,
 			Inline: true,
 		},

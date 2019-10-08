@@ -271,8 +271,9 @@ func ListRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if err != nil {
 		s.ChannelMessageSend(m.ChannelID, "Unable to query roles.")
 		fmt.Printf("Unable to query roles: %s", err)
+		return
 	}
-	s.ChannelMessageSendEmbed(m.ChannelID, getRolesEmbed(roles))
+	s.ChannelMessageSendEmbed(m.ChannelID, getRolesEmbed(roles, "Available Roles"))
 }
 
 func ListMyRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -294,7 +295,7 @@ func ListMyRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
 	sort.SliceStable(sortedroles, func(i, j int) bool {
 		return sortedroles[i].Position > sortedroles[j].Position
 	})
-	s.ChannelMessageSendEmbed(m.ChannelID, getRolesEmbed(sortedroles))
+	s.ChannelMessageSendEmbed(m.ChannelID, getRolesEmbed(sortedroles, "Your Roles"))
 }
 
 func AddRole(s *discordgo.Session, m *discordgo.MessageCreate) {
