@@ -40,15 +40,41 @@ func getAdmin(s *discordgo.Session, m *discordgo.MessageCreate) bool {
 func Role(s *discordgo.Session, m *discordgo.MessageCreate, removing bool) {
 	// if an admin is modifying another persons' role
 	if getAdmin(s, m) && len(m.Mentions) > 0 {
-		role := strings.SplitN(strings.TrimPrefix(m.Content, configData.Prefix), " ", 3)[2]
+		split := strings.SplitN(strings.TrimPrefix(m.Content, configData.Prefix), " ", 3)
+		if len(split) != 3 {
+			s.ChannelMessageSend(m.ChannelID, "Make sure to specify a role after the mention.")
+			return
+		}
+		role := split[2]
 		AddDelRole(m, m.Mentions[0], s, role, removing)
 		return
 	}
-	role := strings.SplitN(strings.TrimPrefix(m.Content, configData.Prefix), " ", 2)[1]
+	split := strings.SplitN(strings.TrimPrefix(m.Content, configData.Prefix), " ", 2)
+	if len(split) < 2 {
+		s.ChannelMessageSend(m.ChannelID, "Make sure to specify a role.")
+		return
+	}
+	role := split[1]
 	AddDelRole(m, m.Author, s, role, removing)
 }
 
 func AddDelRole(m *discordgo.MessageCreate, u *discordgo.User, s *discordgo.Session, roleName string, removing bool) {
+	// first see if the user has permissions to change the role
+	availableRoles, err := getAvailableRoles(s, m, m.Author)
+	if err != nil {
+		fmt.Printf("Error getting avialable roles: %s", err)
+		return
+	}
+	found := false
+	for _, role := range availableRoles {
+		if roleName == strings.ToLower(role.Name) {
+			found = true
+		}
+	}
+	if !found {
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You don't have permission to change role ``%s``.", roleName))
+		return
+	}
 	g, err := s.Guild(m.GuildID)
 	if err != nil {
 		fmt.Printf("Error getting guild: %s", err)
@@ -57,6 +83,7 @@ func AddDelRole(m *discordgo.MessageCreate, u *discordgo.User, s *discordgo.Sess
 	rs, err := s.GuildRoles(m.GuildID)
 	if err != nil {
 		fmt.Printf("Error getting roles: %s", err)
+		return
 	}
 	for _, role := range rs {
 		if strings.ToLower(role.Name) == roleName {
