@@ -59,12 +59,14 @@ func ready(s *discordgo.Session, event *discordgo.Ready) {
 
 // called when a new user enters the server
 func guildMemberAdd(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
-	c, err := s.UserChannelCreate(m.User.ID)
-	if err != nil {
-		fmt.Printf("Error creating channel: %s", err)
-		return
+	if userData.Users[m.User.ID] == "" {
+		c, err := s.UserChannelCreate(m.User.ID)
+		if err != nil {
+			fmt.Printf("Error creating channel: %s", err)
+			return
+		}
+		s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%sregister {first name} {last name} {grade #}'", configData.Prefix))
 	}
-	s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%sregister {first name} {last name} {grade #}'", configData.Prefix))
 }
 
 // called when a message is created on a channel this has access to
