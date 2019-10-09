@@ -23,6 +23,17 @@ The bot can be configured using the following fields:
 | source-dir | the path to the folder that contains the source code and resources folder |
 | mod-role-name | the role name to determine who can use bot mod commands |
 | channels-logging | the ids of channels that the bot will log admin command output in |
+| roles-enabled.user | the roles that any user can access using the bot |
+| roles-enabled.admin | the roels that only admins can access with the bot |
+
+There should also be a file called `users.json` in the same directory
+
+| Field | Value |
+| --- | --- |
+| users | dictionary of user ids and names |
+| names-channel | channel id of channel to post names in |
+
+Finally, on the production environment there should be a file called "production" that the bot stats to find out if it's prod or not.
 
 ## Contributions
 Contributions are welcome, but please make it easy for us.
