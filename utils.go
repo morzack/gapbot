@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 func getFileFullPath(filename string) (string, error) {
@@ -64,4 +66,16 @@ func itemInSlice(item string, slice []string) bool {
 		}
 	}
 	return false
+}
+
+func dmUser(s *discordgo.Session, user discordgo.User, message string) {
+	c, err := s.UserChannelCreate(user.ID)
+	if err != nil {
+		fmt.Printf("Error creating channel: %s", err)
+		return
+	}
+	_, err = s.ChannelMessageSend(c.ID, message)
+	if err != nil {
+		fmt.Printf("Error sending message to user: %s", err)
+	}
 }

@@ -165,7 +165,7 @@ func RemoveUser(s *discordgo.Session, m *discordgo.MessageCreate, ban bool) {
 
 	fields := strings.SplitN(strings.TrimPrefix(m.Content, configData.Prefix), " ", 3)
 	if len(fields) < 3 {
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Please make sure to specify a user and reason when %sing", method))
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Please make sure to specify a user and reason when giving the %s", method))
 		return
 	}
 	reason := fields[2]
@@ -175,6 +175,13 @@ func RemoveUser(s *discordgo.Session, m *discordgo.MessageCreate, ban bool) {
 	}
 	user := m.Mentions[0]
 
+	dmUser(s, *user, fmt.Sprintf("You have been given the %s because %s", method, reason))
+	if ban {
+		dmUser(s, *user, "next time, follow the goddamn rules :)\nhttps://www.youtube.com/watch?v=FXPKJUE86d0")
+	} else {
+		dmUser(s, *user, "get dabbed on\nhttps://cdn.discordapp.com/attachments/593650772227653672/631587659604688897/dabremy.png")
+	}
+
 	var err error
 	if ban {
 		err = s.GuildBanCreateWithReason(m.GuildID, user.ID, reason, 1)
@@ -183,7 +190,7 @@ func RemoveUser(s *discordgo.Session, m *discordgo.MessageCreate, ban bool) {
 	}
 	if err != nil {
 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Unable to %s %s for reason %s", method, user.Mention(), reason))
-		fmt.Printf("Error when %sing user %s, %s", method, user.Mention(), err)
+		fmt.Printf("Error when giving user %s the %s , %s", user.Mention(), method, err)
 		return
 	}
 
@@ -196,7 +203,7 @@ func RemoveUser(s *discordgo.Session, m *discordgo.MessageCreate, ban bool) {
 		fmt.Printf("Error deleting previous message: %s", err)
 	}
 
-	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s was %sed because of reason: %s", user.Mention(), method, reason))
+	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s was given the %s because of reason: %s", user.Mention(), method, reason))
 }
 
 func KickUser(s *discordgo.Session, m *discordgo.MessageCreate) {
