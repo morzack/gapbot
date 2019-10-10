@@ -45,7 +45,7 @@ func writeUsers() error {
 
 func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
-	r := regexp.MustCompile(`^(?P<first>\w+) (?P<last>\w+) (?P<grade>[6-9]|1[0-2])$`)
+	r := regexp.MustCompile(`^(?P<first>\w+) (?P<last>\w{2,}) (?P<grade>[6-9]|1[0-2])$`)
 	subMatch := r.FindStringSubmatch(strings.Join(content[1:], " "))
 
 	if userData.Users[m.Author.ID] == "" {
