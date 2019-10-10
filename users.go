@@ -25,10 +25,11 @@ type UserData struct {
 }
 
 type Student struct {
-	User  *discordgo.User
-	Name  string
-	Grade string
-	Money int
+	User        *discordgo.User
+	Name        string
+	Grade       string
+	Money       int
+	Infractions int
 }
 
 func loadUsers() error {
