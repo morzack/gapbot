@@ -42,8 +42,10 @@ func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 		ListMyRoles(s, m)
 	case "selfkick":
 		KickSelf(s, m)
+		logCommand(s, m)
 	case "selfban":
 		BanSelf(s, m)
+		logCommand(s, m)
 	default:
 		DMCommand(s, m, command)
 	}
