@@ -17,7 +17,7 @@ func DMCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string)
 	case "ping":
 		Ping(s, m)
 	case "register":
-		Register(s, m)
+		RegisterRealQuick(s, m)
 	default:
 		DefaultHelp(s, m)
 	}
@@ -68,9 +68,9 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 	case "massregister":
 		TempMassRegister(s, m)
 		logCommand(s, m)
-	case "deregister":
-		Deregister(s, m)
-		logCommand(s, m)
+	// case "deregister":
+	// 	Deregister(s, m)
+	// 	logCommand(s, m)
 	default:
 		UserCommand(s, m, command)
 	}
@@ -263,7 +263,7 @@ func TempMassRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
 			c, err := s.UserChannelCreate(mem.User.ID)
 			if err != nil {
 				fmt.Printf("Error creating channel: %s", err)
-			} else if userData.Users[mem.User.ID] == "" {
+			} else if userData.Users[mem.User.ID].Name == "" {
 				_, err := s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%sregister {your first and last name} {grade as a number}' or ask for '%s help'", configData.Prefix, configData.Prefix))
 				if err != nil {
 					fmt.Printf("Error sending message to user: %s", err)
