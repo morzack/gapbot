@@ -19,8 +19,15 @@ var (
 )
 
 type UserData struct {
-	Users       map[string]string `json:"users"`
-	NameChannel string            `json:"names-channel"`
+	Users       map(string[Student]) `json:"users"`
+	NameChannel string  `json:"names-channel"`
+}
+
+type Student struct {
+	ID    string
+	Name  string
+	Grade string
+	Money int
 }
 
 func loadUsers() error {
