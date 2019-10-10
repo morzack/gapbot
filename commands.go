@@ -40,8 +40,6 @@ func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 		ListRoles(s, m)
 	case "myroles":
 		ListMyRoles(s, m)
-	case "money":
-		DispMoney(s, m)
 	default:
 		DMCommand(s, m, command)
 	}
@@ -313,8 +311,4 @@ func AddRole(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func DelRole(s *discordgo.Session, m *discordgo.MessageCreate) {
 	Role(s, m, true)
-}
-
-func DispMoney(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You have %v monies. :moneybag:", userData.Users[m.Author.ID].Money))
 }
