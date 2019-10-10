@@ -51,9 +51,7 @@ func getServerHelpEmbed() *discordgo.MessageEmbed {
 			"`addrole` - give yourself a role\n" +
 			"`delrole` - remove a role from yourself\n" +
 			"`roles` - list roles available to you\n" +
-			"`myroles` - list your roles\n" +
-			"`selfkick reason` - kick yourself for a [reason]\n" +
-			"`selfban reason` - ban yourself for a [reason]",
+			"`myroles` - list your roles",
 		Inline: false,
 	})
 	return embed
