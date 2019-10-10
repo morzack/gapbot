@@ -59,7 +59,7 @@ func ready(s *discordgo.Session, event *discordgo.Ready) {
 
 // called when a new user enters the server
 func guildMemberAdd(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
-	if userData.Users[m.User.ID] == "" {
+	if userData.Users[m.User.ID].Name == "" {
 		c, err := s.UserChannelCreate(m.User.ID)
 		if err != nil {
 			fmt.Printf("Error creating channel: %s", err)
@@ -92,7 +92,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if isDM {
 			DMCommand(s, m, content[0])
 		} else {
-			if userData.Users[m.Author.ID] != "" {
+			if userData.Users[m.Author.ID].Name != "" {
 				if getAdmin(s, m) {
 					AdminCommand(s, m, content[0])
 				} else {

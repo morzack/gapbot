@@ -25,7 +25,7 @@ type UserData struct {
 }
 
 type Student struct {
-	ID    string
+	User  *discordgo.User
 	Name  string
 	Grade string
 	Money int
@@ -52,16 +52,18 @@ func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	r := regexp.MustCompile(`^(?P<first>\w+) (?P<last>\w+) (?P<grade>[6-9]|1[0-2])$`)
 	subMatch := r.FindStringSubmatch(strings.Join(content[1:], " "))
 
-	if userData.Users[m.Author.ID] == "" {
+	if userData.Users[m.Author.ID].Name == "" {
 		if subMatch == nil {
 			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You entered something wrong.  Don't forget your grade should be 6-12."))
 			return errUserInputInvalid
-		} else {
-			userData.Users[m.Author.ID] = fmt.Sprintf("%s %s", strings.Title(subMatch[1]), strings.Title(subMatch[2]))
-			s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, userData.Users[m.Author.ID], subMatch[3]))
 		}
+		student.User = m.Author
+		student.Name = fmt.Sprintf("%s %s", strings.Title(subMatch[1]), strings.Title(subMatch[2]))
+		student.Grade = subMatch[3]
+		userData.Users[m.Author.ID] = student
+		s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, userData.Users[m.Author.ID].Name, subMatch[3]))
 	} else {
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are already registered as: %s", userData.Users[m.Author.ID]))
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are already registered as: %s", userData.Users[m.Author.ID].Name))
 		return errUserRegistered
 	}
 	return writeUsers()
@@ -69,7 +71,7 @@ func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
 
 func Deregister(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	u := m.Mentions[0]
-	if userData.Users[u.ID] != "" {
+	if userData.Users[u.ID].Name != "" {
 		delete(userData.Users, u.ID)
 		s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s was removed as a member", u.Username))
 	} else {

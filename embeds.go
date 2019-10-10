@@ -97,22 +97,15 @@ func getRolesEmbed(roles []*discordgo.Role, title string) *discordgo.MessageEmbe
 
 func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild) *discordgo.MessageEmbed {
 	m, _ := s.GuildMember(g.ID, user.ID)
-	b := ""
-	uid := ""
-	idTitle := ""
+	b := "No"
+	uid := user.ID
+	idTitle := "ID"
+	if userData.Users[user.ID].Name != "" {
+		uid = userData.Users[user.ID].Name
+		idTitle = "Name"
+	}
 	if user.Bot {
 		b = "Yes"
-		uid = user.ID
-		idTitle = "ID"
-	} else {
-		b = "No"
-		ok := false
-		uid, ok = userData.Users[user.ID]
-		idTitle = "Name"
-		if !ok {
-			uid = user.ID
-			idTitle = "ID"
-		}
 	}
 	i, _ := m.JoinedAt.Parse()
 	t := i.Format("02/01/2006 15:04:05 EST")
