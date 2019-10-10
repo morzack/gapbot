@@ -28,7 +28,7 @@ type Student struct {
 	User        *discordgo.User
 	Name        string
 	Grade       string
-	Money       int
+	Currency    int
 	Infractions int
 }
 
