@@ -93,7 +93,7 @@ func AddDelRole(m *discordgo.MessageCreate, u *discordgo.User, s *discordgo.Sess
 					fmt.Printf("Error removing role %s to %s", roleName, m.Author.Username)
 					return
 				}
-				s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Role ``%s`` succesfully removed.", roleName))
+				s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Role ``%s`` successfully removed.", roleName))
 				return
 			}
 			err := s.GuildMemberRoleAdd(g.ID, u.ID, role.ID)
@@ -101,7 +101,7 @@ func AddDelRole(m *discordgo.MessageCreate, u *discordgo.User, s *discordgo.Sess
 				fmt.Printf("Error adding role %s to %s", roleName, m.Author.Username)
 				return
 			}
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Role ``%s`` succesfully added.", roleName))
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Role ``%s`` successfully added.", roleName))
 			return
 		}
 	}
