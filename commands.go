@@ -40,6 +40,10 @@ func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 		ListRoles(s, m)
 	case "myroles":
 		ListMyRoles(s, m)
+	case "selfkick":
+		KickSelf(s, m)
+	case "selfban":
+		BanSelf(s, m)
 	default:
 		DMCommand(s, m, command)
 	}
@@ -212,6 +216,59 @@ func KickUser(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func BanUser(s *discordgo.Session, m *discordgo.MessageCreate) {
 	RemoveUser(s, m, true)
+}
+
+func RemoveSelf(s *discordgo.Session, m *discordgo.MessageCreate, ban bool) {
+	method := "kick"
+	if ban {
+		method = "ban"
+	}
+
+	fields := strings.SplitN(strings.TrimPrefix(m.Content, configData.Prefix), " ", 2)
+	if len(fields) < 2 {
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Please make sure to specify a reason when giving yourself a %s", method))
+		return
+	}
+	reason := fields[1]
+	user := m.Author
+
+	dmUser(s, *user, fmt.Sprintf("You have been given the %s because %s", method, reason))
+	if ban {
+		dmUser(s, *user, "next time, follow the goddamn rules :)\nhttps://www.youtube.com/watch?v=FXPKJUE86d0")
+	} else {
+		dmUser(s, *user, "get dabbed on\nhttps://cdn.discordapp.com/attachments/593650772227653672/631587659604688897/dabremy.png")
+	}
+
+	var err error
+	if ban {
+		err = s.GuildBanCreateWithReason(m.GuildID, user.ID, reason, 1)
+	} else {
+		err = s.GuildMemberDeleteWithReason(m.GuildID, user.ID, reason)
+	}
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Unable to %s %s for reason %s", method, user.Mention(), reason))
+		fmt.Printf("Error when giving user %s the %s , %s", user.Mention(), method, err)
+		return
+	}
+
+	prevMessage, err := s.ChannelMessages(m.ChannelID, 1, "", "", "")
+	if err != nil {
+		fmt.Printf("Error retrieving previous message: %s", err)
+	}
+	err = s.ChannelMessageDelete(m.ChannelID, prevMessage[0].ID)
+	if err != nil {
+		fmt.Printf("Error deleting previous message: %s", err)
+	}
+
+	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s was given the %s because of reason: %s", user.Mention(), method, reason))
+}
+
+func KickSelf(s *discordgo.Session, m *discordgo.MessageCreate) {
+	RemoveSelf(s, m, false)
+}
+
+func BanSelf(s *discordgo.Session, m *discordgo.MessageCreate) {
+	RemoveSelf(s, m, true)
 }
 
 func ServerInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
