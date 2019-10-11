@@ -40,6 +40,8 @@ func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 		ListRoles(s, m)
 	case "myroles":
 		ListMyRoles(s, m)
+	case "insult":
+		Insult(s, m)
 	default:
 		DMCommand(s, m, command)
 	}
