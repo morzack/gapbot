@@ -65,7 +65,7 @@ func guildMemberAdd(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
 			fmt.Printf("Error creating channel: %s", err)
 			return
 		}
-		s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%sregister {first name} {last name} {grade #}'", configData.Prefix))
+		s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me `%sregister {first name} {last name} {grade #}` (e.g. `%sregister Jono Jenkens 12`)", configData.Prefix, configData.Prefix))
 	}
 }
 
