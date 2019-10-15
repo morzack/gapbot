@@ -93,7 +93,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			DMCommand(s, m, content[0])
 		} else {
 			if userData.Users[m.Author.ID] != "" {
-				if getAdmin(s, m) {
+				if getAdmin(s, m.Message) {
 					AdminCommand(s, m, content[0])
 				} else {
 					UserCommand(s, m, content[0])

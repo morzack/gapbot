@@ -274,7 +274,7 @@ func TempMassRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func ListRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
-	roles, err := getAvailableRoles(s, m, m.Author)
+	roles, err := getAvailableRoles(s, m.Message, m.Author)
 	if err != nil {
 		s.ChannelMessageSend(m.ChannelID, "Unable to query roles.")
 		fmt.Printf("Unable to query roles: %s", err)

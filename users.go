@@ -54,8 +54,12 @@ func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
 			return errUserInputInvalid
 		}
 		userData.Users[m.Author.ID] = fmt.Sprintf("%s %s", strings.Title(subMatch[1]), strings.Title(subMatch[2]))
-		s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, userData.Users[m.Author.ID], subMatch[3]))
+		nm, err := s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, userData.Users[m.Author.ID], subMatch[3]))
+		if err != nil {
+			fmt.Printf("Error getting the message: %s", err)
+		}
 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You have registered as: %s, %sth grade", userData.Users[m.Author.ID], subMatch[3]))
+		AutoAddMember(nm, s, "Member")
 		return writeUsers()
 	}
 	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are already registered as: %s", userData.Users[m.Author.ID]))
