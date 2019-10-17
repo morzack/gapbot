@@ -11,7 +11,6 @@ import (
 
 var (
 	userData UserData
-	student  Student
 	userFile = "users.json"
 
 	errUserInputInvalid  = errors.New("User input invalid")
@@ -25,11 +24,11 @@ type UserData struct {
 }
 
 type Student struct {
-	User        *discordgo.User
-	Name        string
-	Grade       string
-	Currency    int
-	Infractions int
+	User        *discordgo.User `json:"user"`
+	Name        string          `json:"name"`
+	Grade       string          `json:"grade"`
+	Currency    int             `json:"funds"`
+	Infractions int             `json:"infractions"`
 }
 
 func loadUsers() error {
@@ -53,7 +52,9 @@ func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	r := regexp.MustCompile(`^(?P<first>\w+) (?P<last>\w+) (?P<grade>[6-9]|1[0-2])$`)
 	subMatch := r.FindStringSubmatch(strings.Join(content[1:], " "))
 
-	if userData.Users[m.Author.ID].Name == "" {
+	var student Student
+
+	if _, present := userData.Users[m.Author.ID]; !present {
 		if subMatch == nil {
 			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You entered something wrong.  Don't forget your grade should be 6-12."))
 			return errUserInputInvalid
@@ -63,16 +64,15 @@ func Register(s *discordgo.Session, m *discordgo.MessageCreate) error {
 		student.Grade = subMatch[3]
 		userData.Users[m.Author.ID] = student
 		s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s: %s, %sth grade", m.Author.Username, userData.Users[m.Author.ID].Name, subMatch[3]))
-	} else {
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are already registered as: %s", userData.Users[m.Author.ID].Name))
-		return errUserRegistered
+		return writeUsers()
 	}
-	return writeUsers()
+	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are already registered as: %s", userData.Users[m.Author.ID].Name))
+	return errUserRegistered
 }
 
 func Deregister(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	u := m.Mentions[0]
-	if userData.Users[u.ID].Name != "" {
+	if _, present := userData.Users[u.ID]; present {
 		delete(userData.Users, u.ID)
 		s.ChannelMessageSend(userData.NameChannel, fmt.Sprintf("%s was removed as a member", u.Username))
 	} else {
