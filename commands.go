@@ -264,10 +264,10 @@ func TempMassRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
 			if err != nil {
 				fmt.Printf("Error creating channel: %s", err)
 			} else if userData.Users[mem.User.ID].Name == "" {
-				_, err := s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me '%sregister {your first and last name} {grade as a number}' or ask for '%s help'", configData.Prefix, configData.Prefix))
-				if err != nil {
-					fmt.Printf("Error sending message to user: %s", err)
-				}
+				_, err := s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me `%sregister {your first and last name} {grade as a number}` (e.g. `%sregister Jono Jenkens 12`)", configData.Prefix, configData.Prefix, configData.Prefix))
+      }
+			if err != nil {
+        fmt.Printf("Error sending message to user: %s", err)
 			}
 		}
 	}
