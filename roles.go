@@ -65,6 +65,7 @@ func AddDelRole(m *discordgo.MessageCreate, u *discordgo.User, s *discordgo.Sess
 		fmt.Printf("Error getting avialable roles: %s", err)
 		return
 	}
+	roleName = strings.ToLower(roleName)
 	found := false
 	for _, role := range availableRoles {
 		if roleName == strings.ToLower(role.Name) {
