@@ -68,6 +68,9 @@ func adminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 	// case "massregister":
 	// 	tempMassRegisterCommand(s, m)
 	// 	logCommand(s, m)
+	case "repush-names":
+		pushNamesCommand(s, m)
+		logCommand(s, m)
 	case "deregister":
 		deregisterUserCommand(s, m)
 		logCommand(s, m)
@@ -311,4 +314,17 @@ func addRoleCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func delRoleCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	parseUpdateRole(s, m, true)
+}
+
+func pushNamesCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// iterate through all stored users and push the user joined string to the names channel
+	for _, userID := range loadedUserData.Users {
+		discordUser, err := s.User(userID.DiscordID)
+		if err != nil {
+			// press f in chat
+			fmt.Printf("Unable to make user object for %v: %s", userID, err)
+		} else {
+			pushNewUser(discordUser, s)
+		}
+	}
 }
