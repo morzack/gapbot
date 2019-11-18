@@ -71,6 +71,12 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 	case "deregister":
 		Deregister(s, m)
 		logCommand(s, m)
+	case "mute":
+		muteCommand(s, m)
+		logCommand(s, m)
+	case "unmute":
+		unmuteCommand(s, m)
+		logCommand(s, m)
 	default:
 		UserCommand(s, m, command)
 	}
@@ -311,4 +317,32 @@ func AddRole(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func DelRole(s *discordgo.Session, m *discordgo.MessageCreate) {
 	Role(s, m, true)
+}
+
+func muteCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// automatically add a configured muted role to a user
+	if len(m.Mentions) <= 0 {
+		s.ChannelMessageSend(m.ChannelID, "Make sure to mention a user to mute")
+		return
+	}
+	err := setMuted(s, m, m.Mentions[0], true)
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, "Unable to mute user")
+		return
+	}
+	s.ChannelMessageSend(m.ChannelID, "User muted.")
+}
+
+func unmuteCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// automatically remove a muted role from a user
+	if len(m.Mentions) <= 0 {
+		s.ChannelMessageSend(m.ChannelID, "Make sure to mention a user to unmute")
+		return
+	}
+	err := setMuted(s, m, m.Mentions[0], false)
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, "Unable to unmute user")
+		return
+	}
+	s.ChannelMessageSend(m.ChannelID, "User unmuted.")
 }

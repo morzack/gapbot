@@ -23,6 +23,7 @@ type ConfigData struct {
 	ModRoleName     string       `json:"mod-role-name"`
 	ChannelsLogging []string     `json:"channels-logging"`
 	EnabledRoles    RolesEnabled `json:"roles-enabled"`
+	MutedRole       string       `json:"muted-role"`
 }
 
 type RolesEnabled struct {

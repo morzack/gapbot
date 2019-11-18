@@ -137,3 +137,17 @@ func getAvailableRoles(s *discordgo.Session, m *discordgo.MessageCreate, u *disc
 	}
 	return roles, nil
 }
+
+func setMuted(s *discordgo.Session, m *discordgo.MessageCreate, u *discordgo.User, muting bool) error {
+	// if muted is true than mute the user otherwise unmute/remove the muted role
+	var err error = nil
+	if muting {
+		err = s.GuildMemberRoleAdd(m.GuildID, u.ID, configData.MutedRole)
+	} else {
+		err = s.GuildMemberRoleRemove(m.GuildID, u.ID, configData.MutedRole)
+	}
+	if err != nil {
+		fmt.Printf("Unable to change muted status of user: %s", err)
+	}
+	return err
+}
