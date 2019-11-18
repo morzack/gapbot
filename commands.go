@@ -195,7 +195,7 @@ func removeUserCommand(s *discordgo.Session, m *discordgo.MessageCreate, ban boo
 	}
 
 	prevMessage, err := s.ChannelMessages(m.ChannelID, 1, "", "", "")
-	if err != nil {
+	if err != nil || len(prevMessage) < 1 {
 		fmt.Printf("Error retrieving previous message: %s", err)
 	}
 	err = s.ChannelMessageDelete(m.ChannelID, prevMessage[0].ID)

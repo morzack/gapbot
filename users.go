@@ -81,8 +81,12 @@ func registerUserCommand(s *discordgo.Session, m *discordgo.MessageCreate) error
 }
 
 func deregisterUserCommand(s *discordgo.Session, m *discordgo.MessageCreate) error {
+	if len(m.Mentions) <= 0 {
+		s.ChannelMessageSend(m.ChannelID, "Unable to deregister a user without a mention.")
+		return errUserNotRegistered
+	}
 	u := m.Mentions[0]
-	if _, present := loadedUserData.Users[u.ID]; !present {
+	if _, present := loadedUserData.Users[u.ID]; present {
 		delete(loadedUserData.Users, u.ID)
 		s.ChannelMessageSend(loadedUserData.NameChannel, fmt.Sprintf("%s was removed as a member", u.Username))
 	} else {
