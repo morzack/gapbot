@@ -65,9 +65,9 @@ func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 		logCommand(s, m)
 	case "help":
 		AdminHelp(s, m)
-	case "massregister":
-		TempMassRegister(s, m)
-		logCommand(s, m)
+	// case "massregister":
+	// 	TempMassRegister(s, m)
+	// 	logCommand(s, m)
 	case "deregister":
 		Deregister(s, m)
 		logCommand(s, m)
