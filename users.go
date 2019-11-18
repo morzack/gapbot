@@ -19,8 +19,15 @@ var (
 )
 
 type UserData struct {
-	Users       map[string]string `json:"users"`
-	NameChannel string            `json:"names-channel"`
+	Users       map[string]User `json:"users"`
+	NameChannel string          `json:"names-channel"`
+}
+
+type User struct {
+	DiscordID string `json:"id"`
+	FirstName string `json:"first-name"`
+	LastName  string `json:"last-name"`
+	Grade     int    `json:"grade"`
 }
 
 func loadUsers() error {
