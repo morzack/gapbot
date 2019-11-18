@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -107,11 +108,13 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 	} else {
 		b = "No"
 		ok := false
-		uid, ok = userData.Users[user.ID]
-		idTitle = "Name"
-		if !ok {
-			uid = user.ID
+		var tempUserData userStruct
+		if tempUserData, ok = loadedUserData.Users[user.ID]; !ok {
 			idTitle = "ID"
+			uid = tempUserData.DiscordID
+		} else {
+			idTitle = "Name"
+			uid = fmt.Sprintf("%s %s", tempUserData.FirstName, tempUserData.LastName)
 		}
 	}
 	i, _ := m.JoinedAt.Parse()
