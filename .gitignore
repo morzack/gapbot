@@ -17,3 +17,6 @@ gapbot
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# go vendor files
+vendor/
