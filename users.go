@@ -109,7 +109,7 @@ func deregisterUserCommand(s *discordgo.Session, m *discordgo.MessageCreate) err
 func getGradeString(grade int) string {
 	// if grade is 13 then they're an alumn
 	if grade > 12 {
-		return "alumni"
+		return "Alumni"
 	}
 	return fmt.Sprintf("%dth grade", grade)
 }
