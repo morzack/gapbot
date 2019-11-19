@@ -78,12 +78,16 @@ func registerUserCommand(s *discordgo.Session, m *discordgo.MessageCreate) error
 			DiscordID: m.Author.ID,
 			Grade:     grade,
 		}
-		s.ChannelMessageSend(loadedUserData.NameChannel, fmt.Sprintf("%s: %s %s, %s", m.Author.Mention(), loadedUserData.Users[m.Author.ID].FirstName, loadedUserData.Users[m.Author.ID].LastName, getGradeString(loadedUserData.Users[m.Author.ID].Grade)))
+		pushNewUser(m.Author, s)
 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You have registered as: %s %s, %s", loadedUserData.Users[m.Author.ID].FirstName, loadedUserData.Users[m.Author.ID].LastName, getGradeString(loadedUserData.Users[m.Author.ID].Grade)))
 		return writeUsers()
 	}
 	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are already registered as: %s %s", loadedUserData.Users[m.Author.ID].FirstName, loadedUserData.Users[m.Author.ID].LastName))
 	return errUserRegistered
+}
+
+func pushNewUser(user *discordgo.User, s *discordgo.Session) {
+	s.ChannelMessageSend(loadedUserData.NameChannel, fmt.Sprintf("%s: %s %s, %s", user.Mention(), loadedUserData.Users[user.ID].FirstName, loadedUserData.Users[user.ID].LastName, getGradeString(loadedUserData.Users[user.ID].Grade)))
 }
 
 func deregisterUserCommand(s *discordgo.Session, m *discordgo.MessageCreate) error {
