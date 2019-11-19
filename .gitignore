@@ -1,8 +1,8 @@
 # config files
 config.json
 users.json
-users-new.json
 users-old.json
+users-new.json
 
 # Binaries for programs and plugins
 *.exe

@@ -34,31 +34,31 @@ func getRole(s *discordgo.Session, u *discordgo.User, m *discordgo.Message, role
 }
 
 func getAdmin(s *discordgo.Session, m *discordgo.MessageCreate) bool {
-	return getRole(s, m.Author, m.Message, configData.ModRoleName)
+	return getRole(s, m.Author, m.Message, loadedConfigData.ModRoleName)
 }
 
-func Role(s *discordgo.Session, m *discordgo.MessageCreate, removing bool) {
+func parseUpdateRole(s *discordgo.Session, m *discordgo.MessageCreate, removing bool) {
 	// if an admin is modifying another persons' role
 	if getAdmin(s, m) && len(m.Mentions) > 0 {
-		split := strings.SplitN(strings.TrimPrefix(m.Content, configData.Prefix), " ", 3)
+		split := strings.SplitN(strings.TrimPrefix(m.Content, loadedConfigData.Prefix), " ", 3)
 		if len(split) != 3 {
 			s.ChannelMessageSend(m.ChannelID, "Make sure to specify a role after the mention.")
 			return
 		}
 		role := split[2]
-		AddDelRole(m, m.Mentions[0], s, role, removing)
+		updateRole(m, m.Mentions[0], s, role, removing)
 		return
 	}
-	split := strings.SplitN(strings.TrimPrefix(m.Content, configData.Prefix), " ", 2)
+	split := strings.SplitN(strings.TrimPrefix(m.Content, loadedConfigData.Prefix), " ", 2)
 	if len(split) < 2 {
 		s.ChannelMessageSend(m.ChannelID, "Make sure to specify a role.")
 		return
 	}
 	role := split[1]
-	AddDelRole(m, m.Author, s, role, removing)
+	updateRole(m, m.Author, s, role, removing)
 }
 
-func AddDelRole(m *discordgo.MessageCreate, u *discordgo.User, s *discordgo.Session, roleName string, removing bool) {
+func updateRole(m *discordgo.MessageCreate, u *discordgo.User, s *discordgo.Session, roleName string, removing bool) {
 	// first see if the user has permissions to change the role
 	availableRoles, err := getAvailableRoles(s, m, m.Author)
 	if err != nil {
@@ -128,10 +128,10 @@ func getAvailableRoles(s *discordgo.Session, m *discordgo.MessageCreate, u *disc
 		return nil, err
 	}
 	for _, role := range guildRoles {
-		if itemInSlice(role.Name, configData.EnabledRoles.UserRoles) {
+		if itemInSlice(role.Name, loadedConfigData.EnabledRoles.UserRoles) {
 			roles = append(roles, role)
 		}
-		if admin && itemInSlice(role.Name, configData.EnabledRoles.AdminRoles) {
+		if admin && itemInSlice(role.Name, loadedConfigData.EnabledRoles.AdminRoles) {
 			roles = append(roles, role)
 		}
 	}
@@ -142,9 +142,9 @@ func setMuted(s *discordgo.Session, m *discordgo.MessageCreate, u *discordgo.Use
 	// if muted is true than mute the user otherwise unmute/remove the muted role
 	var err error = nil
 	if muting {
-		err = s.GuildMemberRoleAdd(m.GuildID, u.ID, configData.MutedRole)
+		err = s.GuildMemberRoleAdd(m.GuildID, u.ID, loadedConfigData.MutedRole)
 	} else {
-		err = s.GuildMemberRoleRemove(m.GuildID, u.ID, configData.MutedRole)
+		err = s.GuildMemberRoleRemove(m.GuildID, u.ID, loadedConfigData.MutedRole)
 	}
 	if err != nil {
 		fmt.Printf("Unable to change muted status of user: %s", err)

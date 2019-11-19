@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	configData ConfigData
+	loadedConfigData configDataStruct
 
 	configFile = "config.json"
 
@@ -16,17 +16,17 @@ var (
 	errChannelRegistered    = errors.New("Channel already registered")
 )
 
-type ConfigData struct {
-	DiscordKey      string       `json:"discord-key"`
-	SourceDir       string       `json:"source-dir"`
-	Prefix          string       `json:"bot-prefix"`
-	ModRoleName     string       `json:"mod-role-name"`
-	ChannelsLogging []string     `json:"channels-logging"`
-	EnabledRoles    RolesEnabled `json:"roles-enabled"`
-	MutedRole       string       `json:"muted-role"`
+type configDataStruct struct {
+	DiscordKey      string                       `json:"discord-key"`
+	SourceDir       string                       `json:"source-dir"`
+	Prefix          string                       `json:"bot-prefix"`
+	ModRoleName     string                       `json:"mod-role-name"`
+	ChannelsLogging []string                     `json:"channels-logging"`
+	EnabledRoles    enabledPermissionRolesStruct `json:"roles-enabled"`
+	MutedRole       string                       `json:"muted-role"`
 }
 
-type RolesEnabled struct {
+type enabledPermissionRolesStruct struct {
 	UserRoles  []string `json:"user"`
 	AdminRoles []string `json:"admin"`
 }
@@ -39,17 +39,17 @@ func getDebugMode() bool {
 }
 
 func loadConfig() error {
-	return loadJSON(configFile, &configData)
+	return loadJSON(configFile, &loadedConfigData)
 }
 
 func writeConfig() error {
-	return writeJSON(configFile, configData)
+	return writeJSON(configFile, loadedConfigData)
 }
 
 func removeLoggingChannel(channel string) error {
-	for i, channelID := range configData.ChannelsLogging {
+	for i, channelID := range loadedConfigData.ChannelsLogging {
 		if channelID == channel {
-			configData.ChannelsLogging = append(configData.ChannelsLogging[:i], configData.ChannelsLogging[i+1:]...) // remove the channel, go doesn't have an easy removal function
+			loadedConfigData.ChannelsLogging = append(loadedConfigData.ChannelsLogging[:i], loadedConfigData.ChannelsLogging[i+1:]...) // remove the channel, go doesn't have an easy removal function
 			return writeConfig()
 		}
 	}
@@ -57,11 +57,11 @@ func removeLoggingChannel(channel string) error {
 }
 
 func addLoggingChannel(channel string) error {
-	for _, channelID := range configData.ChannelsLogging {
+	for _, channelID := range loadedConfigData.ChannelsLogging {
 		if channelID == channel {
 			return errChannelRegistered
 		}
 	}
-	configData.ChannelsLogging = append(configData.ChannelsLogging, channel)
+	loadedConfigData.ChannelsLogging = append(loadedConfigData.ChannelsLogging, channel)
 	return writeConfig()
 }

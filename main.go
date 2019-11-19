@@ -26,7 +26,7 @@ func main() {
 		return
 	}
 
-	dg, err := discordgo.New("Bot " + configData.DiscordKey)
+	dg, err := discordgo.New("Bot " + loadedConfigData.DiscordKey)
 	if err != nil {
 		fmt.Printf("Error creating discordgo session: %s", err)
 		return
@@ -54,18 +54,18 @@ func main() {
 
 // called when discord sends the ready state
 func ready(s *discordgo.Session, event *discordgo.Ready) {
-	s.UpdateStatus(0, fmt.Sprintf("Type %shelp", configData.Prefix))
+	s.UpdateStatus(0, fmt.Sprintf("Type %shelp", loadedConfigData.Prefix))
 }
 
 // called when a new user enters the server
 func guildMemberAdd(s *discordgo.Session, m *discordgo.GuildMemberAdd) {
-	if userData.Users[m.User.ID] == "" {
+	if _, present := loadedUserData.Users[m.User.ID]; !present {
 		c, err := s.UserChannelCreate(m.User.ID)
 		if err != nil {
 			fmt.Printf("Error creating channel: %s", err)
 			return
 		}
-		s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me `%sregister {first name} {last name} {grade #}` (e.g. `%sregister Jono Jenkens 12`)", configData.Prefix, configData.Prefix))
+		s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me `%sregister {first name} {last name} {grade # (or 'a' if you're an alumni)}` (e.g. `%sregister Jono Jenkens 12`)", loadedConfigData.Prefix, loadedConfigData.Prefix))
 	}
 }
 
@@ -87,16 +87,16 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			return
 		}
 	}
-	if strings.HasPrefix(m.Content, configData.Prefix) {
-		content := strings.Fields(strings.TrimPrefix(m.Content, configData.Prefix))
+	if strings.HasPrefix(m.Content, loadedConfigData.Prefix) {
+		content := strings.Fields(strings.TrimPrefix(m.Content, loadedConfigData.Prefix))
 		if isDM {
-			DMCommand(s, m, content[0])
+			dmCommand(s, m, content[0])
 		} else {
-			if userData.Users[m.Author.ID] != "" {
+			if _, present := loadedUserData.Users[m.Author.ID]; present {
 				if getAdmin(s, m) {
-					AdminCommand(s, m, content[0])
+					adminCommand(s, m, content[0])
 				} else {
-					UserCommand(s, m, content[0])
+					userCommand(s, m, content[0])
 				}
 			} else {
 				s.ChannelMessageSend(m.ChannelID, "You need to register before using the bot in the server!")
