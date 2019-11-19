@@ -10,93 +10,96 @@ import (
 )
 
 // process commands that can only be run in dms
-func DMCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string) {
+func dmCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string) {
 	switch command {
 	case "help":
-		DMHelp(s, m)
+		dmHelpCommand(s, m)
 	case "ping":
-		Ping(s, m)
+		pingCommand(s, m)
 	case "register":
-		Register(s, m)
+		registerUserCommand(s, m)
 	default:
-		DefaultHelp(s, m)
+		defaultHelpCommand(s, m)
 	}
 }
 
 // process commands as normal user
-func UserCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string) {
+func userCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string) {
 	switch command {
 	case "help":
-		ServerHelp(s, m)
+		serverHelpCommand(s, m)
 	case "user":
-		UserInfo(s, m)
+		userInfoCommand(s, m)
 	case "server":
-		ServerInfo(s, m)
+		serverInfoCommand(s, m)
 	case "addrole":
-		AddRole(s, m)
+		addRoleCommand(s, m)
 	case "delrole":
-		DelRole(s, m)
+		delRoleCommand(s, m)
 	case "roles":
-		ListRoles(s, m)
+		listAvailableRolesCommand(s, m)
 	case "myroles":
-		ListMyRoles(s, m)
+		listMyRolesCommand(s, m)
 	default:
-		DMCommand(s, m, command)
+		dmCommand(s, m, command)
 	}
 }
 
 // process commands as admin
-func AdminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string) {
+func adminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string) {
 	switch command {
 	case "purge":
-		Purge(s, m)
+		purgeCommand(s, m)
 		logCommand(s, m)
 	case "addlog":
-		AddLoggingChannelCommand(s, m)
+		addLoggingChannelCommand(s, m)
 		logCommand(s, m)
 	case "removelog":
-		RemoveLoggingChannelCommand(s, m)
+		removeLoggingChannelCommand(s, m)
 		logCommand(s, m)
 	case "kick":
-		KickUser(s, m)
+		kickUserCommand(s, m)
 		logCommand(s, m)
 	case "ban":
-		BanUser(s, m)
+		banUserCommand(s, m)
 		logCommand(s, m)
 	case "help":
-		AdminHelp(s, m)
+		adminHelpCommand(s, m)
 	// case "massregister":
-	// 	TempMassRegister(s, m)
+	// 	tempMassRegisterCommand(s, m)
 	// 	logCommand(s, m)
+	case "repush-names":
+		pushNamesCommand(s, m)
+		logCommand(s, m)
 	case "deregister":
-		Deregister(s, m)
+		deregisterUserCommand(s, m)
 		logCommand(s, m)
 	default:
-		UserCommand(s, m, command)
+		userCommand(s, m, command)
 	}
 }
 
-func DMHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
+func dmHelpCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getDMHelpEmbed())
 }
 
-func ServerHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
+func serverHelpCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getServerHelpEmbed())
 }
 
-func AdminHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
+func adminHelpCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getAdminHelpEmbed())
 }
 
-func DefaultHelp(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s isn't a valid command. Use %shelp to learn more", strings.TrimPrefix(m.Content, configData.Prefix), configData.Prefix))
+func defaultHelpCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s isn't a valid command. Use %shelp to learn more", strings.TrimPrefix(m.Content, loadedConfigData.Prefix), loadedConfigData.Prefix))
 }
 
-func Ping(s *discordgo.Session, m *discordgo.MessageCreate) {
+func pingCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSend(m.ChannelID, "Pong!")
 }
 
-func Avatar(s *discordgo.Session, m *discordgo.MessageCreate) {
+func avatarCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if len(m.Mentions) > 0 {
 		if len(m.Mentions) > 4 {
 			s.ChannelMessageSend(m.ChannelID, "Make sure to mention less than 5 users")
@@ -110,7 +113,7 @@ func Avatar(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getAvatarEmbed(m.Author))
 }
 
-func Purge(s *discordgo.Session, m *discordgo.MessageCreate) {
+func purgeCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	fields := strings.Fields(m.Content)
 	n, err := strconv.Atoi(fields[len(fields)-1])
 	if err != nil {
@@ -138,7 +141,7 @@ func Purge(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
-func UserInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
+func userInfoCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	g, err := s.Guild(m.GuildID)
 	if err != nil {
 		fmt.Printf("Error getting guild: %s", err)
@@ -157,13 +160,13 @@ func UserInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getUserEmbed(m.Author, s, g))
 }
 
-func RemoveUser(s *discordgo.Session, m *discordgo.MessageCreate, ban bool) {
+func removeUserCommand(s *discordgo.Session, m *discordgo.MessageCreate, ban bool) {
 	method := "kick"
 	if ban {
 		method = "ban"
 	}
 
-	fields := strings.SplitN(strings.TrimPrefix(m.Content, configData.Prefix), " ", 3)
+	fields := strings.SplitN(strings.TrimPrefix(m.Content, loadedConfigData.Prefix), " ", 3)
 	if len(fields) < 3 {
 		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Please make sure to specify a user and reason when giving the %s", method))
 		return
@@ -195,7 +198,7 @@ func RemoveUser(s *discordgo.Session, m *discordgo.MessageCreate, ban bool) {
 	}
 
 	prevMessage, err := s.ChannelMessages(m.ChannelID, 1, "", "", "")
-	if err != nil {
+	if err != nil || len(prevMessage) < 1 {
 		fmt.Printf("Error retrieving previous message: %s", err)
 	}
 	err = s.ChannelMessageDelete(m.ChannelID, prevMessage[0].ID)
@@ -206,15 +209,15 @@ func RemoveUser(s *discordgo.Session, m *discordgo.MessageCreate, ban bool) {
 	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s was given the %s because of reason: %s", user.Mention(), method, reason))
 }
 
-func KickUser(s *discordgo.Session, m *discordgo.MessageCreate) {
-	RemoveUser(s, m, false)
+func kickUserCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	removeUserCommand(s, m, false)
 }
 
-func BanUser(s *discordgo.Session, m *discordgo.MessageCreate) {
-	RemoveUser(s, m, true)
+func banUserCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	removeUserCommand(s, m, true)
 }
 
-func ServerInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
+func serverInfoCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	g, err := s.Guild(m.GuildID)
 	if err != nil {
 		fmt.Printf("Error getting guild: %s", err)
@@ -228,7 +231,7 @@ func ServerInfo(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getServerEmbed(s, g, guildOwner))
 }
 
-func AddLoggingChannelCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+func addLoggingChannelCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	err := addLoggingChannel(m.ChannelID)
 	if err == nil {
 		s.ChannelMessageSend(m.ChannelID, "This channel will now be used for logging")
@@ -240,7 +243,7 @@ func AddLoggingChannelCommand(s *discordgo.Session, m *discordgo.MessageCreate) 
 	}
 }
 
-func RemoveLoggingChannelCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+func removeLoggingChannelCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	err := removeLoggingChannel(m.ChannelID)
 	if err == nil {
 		s.ChannelMessageSend(m.ChannelID, "This channel will no longer be used for logging")
@@ -252,7 +255,7 @@ func RemoveLoggingChannelCommand(s *discordgo.Session, m *discordgo.MessageCreat
 	}
 }
 
-func TempMassRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
+func tempMassRegisterCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	guild, err := s.State.Guild(m.GuildID)
 	if err != nil {
 		fmt.Printf("Error getting guild: %s", err)
@@ -263,8 +266,8 @@ func TempMassRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
 			c, err := s.UserChannelCreate(mem.User.ID)
 			if err != nil {
 				fmt.Printf("Error creating channel: %s", err)
-			} else if userData.Users[mem.User.ID] == "" {
-				_, err := s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me `%sregister {your first and last name} {grade as a number}` (e.g. `%sregister Jono Jenkens 12`)", configData.Prefix, configData.Prefix, configData.Prefix))
+			} else if _, ok := loadedUserData.Users[mem.User.ID]; !ok {
+				_, err := s.ChannelMessageSend(c.ID, fmt.Sprintf("Please send me `%sregister {your first and last name} {grade as a number}` (e.g. `%sregister Jono Jenkens 12`)", loadedConfigData.Prefix, loadedConfigData.Prefix))
 				if err != nil {
 					fmt.Printf("Error sending message to user: %s", err)
 				}
@@ -273,7 +276,7 @@ func TempMassRegister(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 }
 
-func ListRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
+func listAvailableRolesCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	roles, err := getAvailableRoles(s, m, m.Author)
 	if err != nil {
 		s.ChannelMessageSend(m.ChannelID, "Unable to query roles.")
@@ -283,7 +286,7 @@ func ListRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getRolesEmbed(roles, "Available Roles"))
 }
 
-func ListMyRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
+func listMyRolesCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	mem, err := s.GuildMember(m.GuildID, m.Author.ID)
 	if err != nil {
 		fmt.Printf("Error getting member: %s", err)
@@ -305,10 +308,23 @@ func ListMyRoles(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getRolesEmbed(sortedroles, "Your Roles"))
 }
 
-func AddRole(s *discordgo.Session, m *discordgo.MessageCreate) {
-	Role(s, m, false)
+func addRoleCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	parseUpdateRole(s, m, false)
 }
 
-func DelRole(s *discordgo.Session, m *discordgo.MessageCreate) {
-	Role(s, m, true)
+func delRoleCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	parseUpdateRole(s, m, true)
+}
+
+func pushNamesCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// iterate through all stored users and push the user joined string to the names channel
+	for _, userID := range loadedUserData.Users {
+		discordUser, err := s.User(userID.DiscordID)
+		if err != nil {
+			// press f in chat
+			fmt.Printf("Unable to make user object for %v: %s", userID, err)
+		} else {
+			pushNewUser(discordUser, s)
+		}
+	}
 }

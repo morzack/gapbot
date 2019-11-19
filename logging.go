@@ -17,7 +17,7 @@ func logServerInvite(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func postToLogs(s *discordgo.Session, guildID string, message string) {
-	for _, channelID := range configData.ChannelsLogging {
+	for _, channelID := range loadedConfigData.ChannelsLogging {
 		channel, err := s.Channel(channelID)
 		if err != nil {
 			fmt.Printf("Error confirming channel guild id for %s: %s", channelID, err)
