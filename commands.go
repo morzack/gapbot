@@ -444,3 +444,20 @@ func registerUserLastFMCommand(s *discordgo.Session, m *discordgo.MessageCreate)
 	}
 	s.ChannelMessageSend(m.ChannelID, "Linked accounts successfully!")
 }
+
+func makeBigLettersCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	fields := strings.SplitN(strings.TrimPrefix(m.Content, loadedConfigData.Prefix), " ", 2)
+	message := ""
+	for _, letter := range fields[1] {
+		if strconv.QuoteRune(letter) != " " {
+			emoji, err := s.State.Emoji(m.GuildID, fmt.Sprintf(":regional_indicator_%s:", strconv.QuoteRune(letter)))
+			if err != nil {
+				fmt.Printf("Error getting emoji: %s", err)
+			}
+			message += emoji.MessageFormat()
+		} else {
+			message += " "
+		}
+	}
+	s.ChannelMessageSend(m.ChannelID, message)
+}
