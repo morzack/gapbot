@@ -53,18 +53,24 @@ func writeUsers() error {
 
 func registerUserCommand(s *discordgo.Session, m *discordgo.MessageCreate) error {
 	content := strings.Fields(strings.TrimPrefix(m.Content, loadedConfigData.Prefix))
-	r := regexp.MustCompile(`^(?P<first>\w+) (?P<last>\w{2,}) (?P<grade>[6-9]|1[0-2])$`)
+	r := regexp.MustCompile(`^(?P<first>\w+) (?P<last>\w{2,}) (?P<grade>[6-9]|1[0-2]|a)$`)
 	subMatch := r.FindStringSubmatch(strings.Join(content[1:], " "))
 
 	if _, present := loadedUserData.Users[m.Author.ID]; !present {
 		if subMatch == nil {
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You entered something wrong.  Don't forget your grade should be 6-12."))
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You entered something wrong.  Don't forget your grade should be 6-12 (or 'a' if you're an alumni)."))
 			return errUserInputInvalid
 		}
-		grade, err := strconv.Atoi(subMatch[3])
-		if err != nil {
-			fmt.Printf("Error parsing grade (input was %s) to int: %s", subMatch[3], err)
-			return errUserInputInvalid
+		var grade int
+		var err error
+		if subMatch[3] == "a" {
+			grade = 13
+		} else {
+			grade, err = strconv.Atoi(subMatch[3])
+			if err != nil {
+				fmt.Printf("Error parsing grade (input was %s) to int: %s", subMatch[3], err)
+				return errUserInputInvalid
+			}
 		}
 		loadedUserData.Users[m.Author.ID] = userStruct{
 			FirstName: strings.Title(subMatch[1]),
@@ -73,7 +79,7 @@ func registerUserCommand(s *discordgo.Session, m *discordgo.MessageCreate) error
 			Grade:     grade,
 		}
 		pushNewUser(m.Author, s)
-		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You have registered as: %s %s, %dth grade", loadedUserData.Users[m.Author.ID].FirstName, loadedUserData.Users[m.Author.ID].LastName, loadedUserData.Users[m.Author.ID].Grade))
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You have registered as: %s %s, %s", loadedUserData.Users[m.Author.ID].FirstName, loadedUserData.Users[m.Author.ID].LastName, getGradeString(loadedUserData.Users[m.Author.ID].Grade)))
 		return writeUsers()
 	}
 	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("You are already registered as: %s %s", loadedUserData.Users[m.Author.ID].FirstName, loadedUserData.Users[m.Author.ID].LastName))
@@ -81,7 +87,7 @@ func registerUserCommand(s *discordgo.Session, m *discordgo.MessageCreate) error
 }
 
 func pushNewUser(user *discordgo.User, s *discordgo.Session) {
-	s.ChannelMessageSend(loadedUserData.NameChannel, fmt.Sprintf("%s: %s %s, %dth grade", user.Mention(), loadedUserData.Users[user.ID].FirstName, loadedUserData.Users[user.ID].LastName, loadedUserData.Users[user.ID].Grade))
+	s.ChannelMessageSend(loadedUserData.NameChannel, fmt.Sprintf("%s: %s %s, %s", user.Mention(), loadedUserData.Users[user.ID].FirstName, loadedUserData.Users[user.ID].LastName, getGradeString(loadedUserData.Users[user.ID].Grade)))
 }
 
 func deregisterUserCommand(s *discordgo.Session, m *discordgo.MessageCreate) error {
@@ -98,4 +104,12 @@ func deregisterUserCommand(s *discordgo.Session, m *discordgo.MessageCreate) err
 		return errUserNotRegistered
 	}
 	return writeUsers()
+}
+
+func getGradeString(grade int) string {
+	// if grade is 13 then they're an alumn
+	if grade > 12 {
+		return "alumni"
+	}
+	return fmt.Sprintf("%dth grade", grade)
 }
