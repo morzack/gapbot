@@ -332,18 +332,19 @@ func pushNamesCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func makeBigLettersCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
-	fields := strings.SplitN(strings.TrimPrefix(m.Content, loadedConfigData.Prefix), " ", 2)
+	fields := strings.SplitN(strings.ToLower(strings.TrimPrefix(m.Content, loadedConfigData.Prefix)), " ", 2)
+	initial := fields[1]
 	message := ""
-	for _, letter := range fields[1] {
-		if strconv.QuoteRune(letter) != " " {
-			emoji, err := s.State.Emoji(m.GuildID, fmt.Sprintf(":regional_indicator_%s:", strconv.QuoteRune(letter)))
-			if err != nil {
-				fmt.Printf("Error getting emoji: %s", err)
+	for i := range initial {
+		if string(initial[i]) != " " {
+			if string(initial[i]) == "b" {
+				message += fmt.Sprintf(":%s:", string(initial[i]))
+				continue
 			}
-			message += emoji.MessageFormat()
-		} else {
-			message += " "
+			message += fmt.Sprintf(":regional_indicator_%s:", string(initial[i]))
+			continue
 		}
+		message += " "
 	}
 	s.ChannelMessageSend(m.ChannelID, message)
 }
