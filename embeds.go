@@ -35,7 +35,8 @@ func getDMHelpEmbed() *discordgo.MessageEmbed {
 		&discordgo.MessageEmbedField{
 			Name: "Basic",
 			Value: "`ping` - ping the bot\n" +
-				"`help` - it seems like you figured this one out",
+				"`help` - it seems like you figured this one out" +
+				"'bigletters - make anything big (no punctuation)",
 			Inline: false,
 		},
 	}
@@ -52,7 +53,8 @@ func getServerHelpEmbed() *discordgo.MessageEmbed {
 			"`addrole` - give yourself a role\n" +
 			"`delrole` - remove a role from yourself\n" +
 			"`roles` - list roles available to you\n" +
-			"`myroles` - list your roles",
+			"`myroles` - list your roles\n" +
+			"'bigletters - make anything big (no punctuation)",
 		Inline: false,
 	})
 	return embed
