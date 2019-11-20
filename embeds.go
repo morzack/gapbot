@@ -72,7 +72,9 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 			"`removelog` - stop using a channel for logging\n" +
 			"`deregister @` - deregister [@]\n" +
 			"`addrole @ role` - give [@] a [role]\n" +
-			"`delrole @ role` - remove a [role] from [@]",
+			"`delrole @ role` - remove a [role] from [@]\n" +
+			"`mute @` - give [@] the configured muted role\n" +
+			"`unmute @` - remove the muted role from [@]",
 		Inline: false,
 	})
 	return embed
