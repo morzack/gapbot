@@ -111,5 +111,8 @@ func getGradeString(grade int) string {
 	if grade > 12 {
 		return "Alumni"
 	}
+	if grade == -1 {
+		return "unknown grade"
+	}
 	return fmt.Sprintf("%dth grade", grade)
 }
