@@ -116,7 +116,7 @@ func getUserEmbed(user *discordgo.User, s *discordgo.Session, g *discordgo.Guild
 			uid = tempUserData.DiscordID
 		} else {
 			idTitle = "Name"
-			uid = fmt.Sprintf("%s %s", tempUserData.FirstName, tempUserData.LastName)
+			uid = fmt.Sprintf("%s %s, %s", tempUserData.FirstName, tempUserData.LastName, getGradeString(tempUserData.Grade))
 		}
 	}
 	i, _ := m.JoinedAt.Parse()
