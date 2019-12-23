@@ -46,6 +46,13 @@ func getDMHelpEmbed() *discordgo.MessageEmbed {
 				"`lastloved` - get your most recently loved song off last.fm",
 			Inline: false,
 		},
+		&discordgo.MessageEmbedField{
+			Name: "Last.fm",
+			Value: "`lastregister [username]` - link your discord account to last.fm\n" +
+				"`lastplayed` - get your most recently scrobbled song off last.fm\n" +
+				"`lastloved` - get your most recently loved song off last.fm",
+			Inline: false,
+		},
 	}
 	return embed
 }
