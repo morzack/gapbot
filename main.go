@@ -26,11 +26,15 @@ func main() {
 		return
 	}
 
+	// get discordgo instance
 	dg, err := discordgo.New("Bot " + loadedConfigData.DiscordKey)
 	if err != nil {
 		fmt.Printf("Error creating discordgo session: %s", err)
 		return
 	}
+
+	// get lastfm instance
+	createLastFMAPIInstance()
 
 	dg.AddHandler(guildMemberAdd)
 	dg.AddHandler(messageCreate)
