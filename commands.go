@@ -18,6 +18,12 @@ func dmCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string)
 		pingCommand(s, m)
 	case "register":
 		registerUserCommand(s, m)
+	case "lastplayed":
+		lastPlayingCommand(s, m)
+	case "lastloved":
+		lastLovedCommand(s, m)
+	case "lastregister":
+		registerUserLastFMCommand(s, m)
 	default:
 		defaultHelpCommand(s, m)
 	}
@@ -361,4 +367,52 @@ func unmuteCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	s.ChannelMessageSend(m.ChannelID, "User unmuted.")
+}
+
+func lastPlayingCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	userStruct, err := getUserStruct(m.Author)
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, "Unable to query user. Are you registered?")
+		return
+	}
+	lastListened, err := getUserLastListened(userStruct)
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Unable to get last.fm data for user `%s`. Please make sure you've linked accounts.", userStruct.LastFmAccount))
+		return
+	}
+	lastPlayingEmbed := getLastFMTrackEmbed(lastListened)
+	s.ChannelMessageSend(m.ChannelID, "Most recently scrobbled song:")
+	s.ChannelMessageSendEmbed(m.ChannelID, lastPlayingEmbed)
+}
+
+func lastLovedCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	userStruct, err := getUserStruct(m.Author)
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, "Unable to query user. Are you registered?")
+		return
+	}
+	lastListened, err := getUserLastLoved(userStruct)
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("Unable to get last.fm data for user `%s`. Please make sure you've linked accounts.", userStruct.LastFmAccount))
+		return
+	}
+	lastLovedEmbed := getLastFMTrackEmbed(lastListened)
+	s.ChannelMessageSend(m.ChannelID, "Most recently loved song:")
+	s.ChannelMessageSendEmbed(m.ChannelID, lastLovedEmbed)
+}
+
+func registerUserLastFMCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	fields := strings.SplitN(strings.TrimPrefix(m.Content, loadedConfigData.Prefix), " ", 2)
+	if len(fields) < 2 {
+		s.ChannelMessageSend(m.ChannelID, "Ensure that your username is included")
+		return
+	}
+	user := m.Author
+	lastFMUserName := fields[1]
+	err := registerUserLastFM(user, lastFMUserName)
+	if err != nil {
+		s.ChannelMessageSend(m.ChannelID, "Unable to link accounts.")
+		return
+	}
+	s.ChannelMessageSend(m.ChannelID, "Linked accounts successfully!")
 }

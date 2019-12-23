@@ -38,6 +38,13 @@ func getDMHelpEmbed() *discordgo.MessageEmbed {
 				"`help` - it seems like you figured this one out",
 			Inline: false,
 		},
+		&discordgo.MessageEmbedField{
+			Name: "Last.fm",
+			Value: "`lastregister [username]` - link your discord account to last.fm\n" +
+				"`lastplayed` - get your most recently scrobbled song off last.fm\n" +
+				"`lastloved` - get your most recently loved song off last.fm",
+			Inline: false,
+		},
 	}
 	return embed
 }
@@ -164,6 +171,31 @@ func getServerEmbed(s *discordgo.Session, g *discordgo.Guild, u *discordgo.User)
 			Value:  u.String(),
 			Inline: false,
 		},
+	}
+	return embed
+}
+
+func getLastFMTrackEmbed(mostRecentTrack lastFMSong) *discordgo.MessageEmbed {
+	embed := getBaseEmbed()
+	embed.Title = mostRecentTrack.Name
+	embed.URL = mostRecentTrack.URL
+	embed.Thumbnail = &discordgo.MessageEmbedThumbnail{
+		URL: mostRecentTrack.ImageThumbnail,
+	}
+	embed.Fields = []*discordgo.MessageEmbedField{}
+	if mostRecentTrack.Artist != "" {
+		embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+			Name:   "Artist",
+			Value:  mostRecentTrack.Artist,
+			Inline: false,
+		})
+	}
+	if mostRecentTrack.Album != "" {
+		embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+			Name:   "Album",
+			Value:  mostRecentTrack.Album,
+			Inline: false,
+		})
 	}
 	return embed
 }

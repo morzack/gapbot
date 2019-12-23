@@ -25,10 +25,11 @@ type userDataStruct struct {
 }
 
 type userStruct struct {
-	DiscordID string `json:"id"`
-	FirstName string `json:"first-name"`
-	LastName  string `json:"last-name"`
-	Grade     int    `json:"grade"`
+	DiscordID     string `json:"id"`
+	FirstName     string `json:"first-name"`
+	LastName      string `json:"last-name"`
+	Grade         int    `json:"grade"`
+	LastFmAccount string `json:"last-fm"`
 }
 
 func loadUsers() error {
@@ -115,4 +116,11 @@ func getGradeString(grade int) string {
 		return "unknown grade"
 	}
 	return fmt.Sprintf("%dth grade", grade)
+}
+
+func getUserStruct(user *discordgo.User) (userStruct, error) {
+	if userData, ok := loadedUserData.Users[user.ID]; ok {
+		return userData, nil
+	}
+	return userStruct{}, errUserNotRegistered
 }
