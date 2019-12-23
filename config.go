@@ -18,6 +18,8 @@ var (
 
 type configDataStruct struct {
 	DiscordKey      string                       `json:"discord-key"`
+	LastFMKey       string                       `json:"last-fm-key"`
+	LastFMSecret    string                       `json:"last-fm-secret"`
 	SourceDir       string                       `json:"source-dir"`
 	Prefix          string                       `json:"bot-prefix"`
 	ModRoleName     string                       `json:"mod-role-name"`
