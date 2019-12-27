@@ -32,6 +32,10 @@ func registerUserLastFM(user *discordgo.User, lastFmUsername string) error {
 	}
 	currentUserStruct.LastFmAccount = lastFmUsername
 	loadedUserData.Users[user.ID] = currentUserStruct
+	err = writeUsers()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
