@@ -106,7 +106,13 @@ func adminHelpCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func defaultHelpCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
-	s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s isn't a valid command. Use %shelp to learn more", strings.TrimPrefix(m.Content, loadedConfigData.Prefix), loadedConfigData.Prefix))
+	// this is evaluation to check and see if it contains a number at the start
+	// if it does then it's probably someone typing something like $20
+	command := strings.TrimPrefix(m.Content, loadedConfigData.Prefix)
+	firstChar := string([]rune(command)[0])
+	if !strings.ContainsAny(firstChar, "0123456789 ") {
+		s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("%s isn't a valid command. Use %shelp to learn more", strings.TrimPrefix(m.Content, loadedConfigData.Prefix), loadedConfigData.Prefix))
+	}
 }
 
 func pingCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
