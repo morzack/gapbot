@@ -444,6 +444,7 @@ func registerUserLastFMCommand(s *discordgo.Session, m *discordgo.MessageCreate)
 	}
 	s.ChannelMessageSend(m.ChannelID, "Linked accounts successfully!")
 }
+<<<<<<< HEAD
 
 func makeBigLettersCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	fields := strings.SplitN(strings.TrimPrefix(m.Content, loadedConfigData.Prefix), " ", 2)
@@ -461,3 +462,5 @@ func makeBigLettersCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 	s.ChannelMessageSend(m.ChannelID, message)
 }
+=======
+>>>>>>> 86fd5b8... Punctuation no longer breaks it
