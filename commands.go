@@ -2,11 +2,15 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"io/ioutil"
+	"net/http"
 	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/qeesung/image2ascii/convert"
 )
 
 // process commands that can only be run in dms
@@ -46,6 +50,8 @@ func userCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 		listAvailableRolesCommand(s, m)
 	case "myroles":
 		listMyRolesCommand(s, m)
+	case "ascii":
+		asciiArtCommand(s, m)
 	default:
 		dmCommand(s, m, command)
 	}
@@ -421,4 +427,46 @@ func registerUserLastFMCommand(s *discordgo.Session, m *discordgo.MessageCreate)
 		return
 	}
 	s.ChannelMessageSend(m.ChannelID, "Linked accounts successfully!")
+}
+
+func asciiArtCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if len(m.Attachments) == 0 {
+		s.ChannelMessageSend(m.ChannelID, "Please insert an image to convert to ascii")
+		return
+	}
+	attachment := m.Attachments[0]
+
+	tmpfile, err := ioutil.TempFile("", "*")
+	if err != nil {
+		fmt.Printf("Unable to make temp file: %s", err)
+	}
+	resp, err := http.Get(attachment.URL)
+	if err != nil {
+		fmt.Printf("Unable to get file: %s", err)
+	}
+	_, err = io.Copy(tmpfile, resp.Body)
+	if err != nil {
+		fmt.Printf("Unable to download file: %s", err)
+	}
+	resp.Body.Close()
+
+	convertOptions := convert.DefaultOptions
+	convertOptions.Colored = false
+	convertOptions.FixedHeight = 20
+	convertOptions.FixedWidth = 49
+	converter := convert.NewImageConverter()
+	ascii := converter.ImageFile2ASCIIString(tmpfile.Name(), &convertOptions)
+
+	embed := getBaseEmbed()
+	embed.Title = "ASCII Art"
+	embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+		Name:   "Image",
+		Value:  fmt.Sprintf("```\n%s\n```", ascii),
+		Inline: true,
+	})
+	_, err = s.ChannelMessageSendEmbed(m.ChannelID, embed)
+	if err != nil {
+		fmt.Printf("Error sending embed: %s\n", err)
+	}
+	tmpfile.Close()
 }
