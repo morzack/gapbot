@@ -345,10 +345,12 @@ func makeBigLettersCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if string(initial[i]) != " " {
 			if string(initial[i]) == "b" {
 				message += fmt.Sprintf(":%s:", string(initial[i]))
+			} else if rune(initial[i]) >= 'a' && rune(initial[i]) <= 'z' || rune(initial[i]) >= 'A' && rune(initial[i]) <= 'Z' {
+				message += fmt.Sprintf(":regional_indicator_%s:", string(initial[i]))
 				continue
+			} else {
+				message += string(initial[i])
 			}
-			message += fmt.Sprintf(":regional_indicator_%s:", string(initial[i]))
-			continue
 		}
 		message += " "
 	}
