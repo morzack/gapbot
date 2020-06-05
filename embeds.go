@@ -68,7 +68,7 @@ func getServerHelpEmbed() *discordgo.MessageEmbed {
 			"`delrole` - remove a role from yourself\n" +
 			"`roles` - list roles available to you\n" +
 			"`myroles` - list your roles\n" +
-			"'bigletters - make anything big (no punctuation)",
+			"'bigletters - make big text",
 		Inline: false,
 	})
 	return embed
