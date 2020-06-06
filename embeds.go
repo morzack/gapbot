@@ -35,7 +35,8 @@ func getDMHelpEmbed() *discordgo.MessageEmbed {
 		&discordgo.MessageEmbedField{
 			Name: "Basic",
 			Value: "`ping` - ping the bot\n" +
-				"`help` - it seems like you figured this one out",
+				"`help` - it seems like you figured this one out\n" +
+				"`bigletters` - make big text",
 			Inline: false,
 		},
 		&discordgo.MessageEmbedField{

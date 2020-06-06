@@ -24,6 +24,8 @@ func dmCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string)
 		lastLovedCommand(s, m)
 	case "lastregister":
 		registerUserLastFMCommand(s, m)
+	case "bigletters":
+		makeBigLettersCommand(s, m)
 	default:
 		defaultHelpCommand(s, m)
 	}
@@ -421,4 +423,28 @@ func registerUserLastFMCommand(s *discordgo.Session, m *discordgo.MessageCreate)
 		return
 	}
 	s.ChannelMessageSend(m.ChannelID, "Linked accounts successfully!")
+}
+
+func makeBigLettersCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	fields := strings.SplitN(strings.ToLower(strings.TrimPrefix(m.Content, loadedConfigData.Prefix)), " ", 2)
+	if len(fields) < 2 {
+		s.ChannelMessageSend(m.ChannelID, "Please make sure you enter text to be transformed")
+		return
+	}
+	initial := fields[1]
+	message := ""
+	for _, char := range initial {
+		if char != ' ' {
+			if char == 'b' {
+				message += ":b:"
+			} else if (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') {
+				message += fmt.Sprintf(":regional_indicator_%c:", char)
+				continue
+			} else {
+				message += fmt.Sprintf("%c", char)
+			}
+		}
+		message += " "
+	}
+	s.ChannelMessageSend(m.ChannelID, message)
 }
