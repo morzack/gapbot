@@ -48,6 +48,8 @@ func userCommand(s *discordgo.Session, m *discordgo.MessageCreate, command strin
 		listAvailableRolesCommand(s, m)
 	case "myroles":
 		listMyRolesCommand(s, m)
+	case "ownerhist":
+		ownerHist(s, m)
 	default:
 		dmCommand(s, m, command)
 	}
@@ -87,6 +89,9 @@ func adminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 		logCommand(s, m)
 	case "unmute":
 		unmuteCommand(s, m)
+		logCommand(s, m)
+	case "ownerhist":
+		ownerHist(s, m)
 		logCommand(s, m)
 	default:
 		userCommand(s, m, command)
@@ -447,4 +452,10 @@ func makeBigLettersCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 		message += " "
 	}
 	s.ChannelMessageSend(m.ChannelID, message)
+}
+
+func ownerHist(s *discordgo.Session, m *discordgo.MessageCreate) {
+	//simple and possibly unnecessary but whatever
+	s.ChannelMessageSend(m.ChannelID, `December 2018 - June 2020: Patchkat
+					   June 2020 - Present: Astroturtle`)
 }
