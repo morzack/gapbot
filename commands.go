@@ -90,9 +90,6 @@ func adminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 	case "unmute":
 		unmuteCommand(s, m)
 		logCommand(s, m)
-	case "ownerhist":
-		ownerHist(s, m)
-		logCommand(s, m)
 	default:
 		userCommand(s, m, command)
 	}
