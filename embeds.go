@@ -177,7 +177,7 @@ func getServerEmbed(s *discordgo.Session, g *discordgo.Guild, u *discordgo.User)
 	return embed
 }
 
-func getOwnerHistEmbed(s *discordgo.Session, g *discordgo.Guild) *discordgo.MessageEmbed {
+func getOwnerHistEmbed(s *discordgo.Session) *discordgo.MessageEmbed {
 
 	embed := getBaseEmbed()
 	embed.Title = "Owner History"
