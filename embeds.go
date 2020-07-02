@@ -177,6 +177,26 @@ func getServerEmbed(s *discordgo.Session, g *discordgo.Guild, u *discordgo.User)
 	return embed
 }
 
+func getOwnerHistEmbed(s *discordgo.Session, g *discordgo.Guild) *discordgo.MessageEmbed {
+
+	embed := getBaseEmbed()
+	embed.Title = "Owner History"
+	embed.Fields = []*discordgo.MessageEmbedField{
+		&discordgo.MessageEmbedField{
+			Name: "Patchkat",
+			Value: "December 2018 (Server Creation) - June 2020",
+			Inline: false,
+		},
+		&discordgo.MessageEmbedField{
+			Name: "Astroturtle",
+			Value: "June 2020 - Present",
+			Inline: false,
+		},
+	}
+	return embed
+	
+}
+
 func getLastFMTrackEmbed(mostRecentTrack lastFMSong) *discordgo.MessageEmbed {
 	embed := getBaseEmbed()
 	embed.Title = mostRecentTrack.Name
