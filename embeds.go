@@ -60,7 +60,8 @@ func getServerHelpEmbed() *discordgo.MessageEmbed {
 			"`addrole` - give yourself a role\n" +
 			"`delrole` - remove a role from yourself\n" +
 			"`roles` - list roles available to you\n" +
-			"`myroles` - list your roles",
+			"`myroles` - list your roles\n" +
+			"`ownerhist` - see owner history of this server",
 		Inline: false,
 	})
 	return embed
