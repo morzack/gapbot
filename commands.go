@@ -453,6 +453,6 @@ func makeBigLettersCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func ownerHist(s *discordgo.Session, m *discordgo.MessageCreate) {
 	//simple and possibly unnecessary but whatever
-	s.ChannelMessageSend(m.ChannelID, `December 2018 - June 2020: Patchkat
-					   June 2020 - Present: Astroturtle`)
+	s.ChannelMessageSend(m.ChannelID, "December 2018 (Server Creation) - June 2020: Patchkat\n" +
+			     "June 2020 - Present: Astroturtle")
 }
