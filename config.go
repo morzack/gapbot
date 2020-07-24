@@ -4,7 +4,10 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"os"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 var (
@@ -26,6 +29,7 @@ type configDataStruct struct {
 	ChannelsLogging []string                     `json:"channels-logging"`
 	EnabledRoles    enabledPermissionRolesStruct `json:"roles-enabled"`
 	MutedRole       string                       `json:"muted-role"`
+	OpsUsers        []string                     `json:"ops-users"`
 }
 
 type enabledPermissionRolesStruct struct {
@@ -66,4 +70,8 @@ func addLoggingChannel(channel string) error {
 	}
 	loadedConfigData.ChannelsLogging = append(loadedConfigData.ChannelsLogging, channel)
 	return writeConfig()
+}
+
+func startBotConfig(s *discordgo.Session) {
+	s.UpdateStatus(0, fmt.Sprintf("Type %shelp", loadedConfigData.Prefix))
 }

@@ -86,6 +86,20 @@ func getAdminHelpEmbed() *discordgo.MessageEmbed {
 	return embed
 }
 
+func getOpsHelpEmbed() *discordgo.MessageEmbed {
+	embed := getAdminHelpEmbed()
+	embed.Title = "Gapbot Commands"
+	embed.Fields = append(embed.Fields, &discordgo.MessageEmbedField{
+		Name: "Ops",
+		Value: "`massregister` - send registration notification to all users\n" +
+			"`repush-names` - push all names to the names channel\n" +
+			"`push-user` - push a specific user to the names channel\n" +
+			"`reload-bot` - reload the bot configuration in place",
+		Inline: false,
+	})
+	return embed
+}
+
 func getRolesEmbed(roles []*discordgo.Role, title string) *discordgo.MessageEmbed {
 	embed := getBaseEmbed()
 	// embed.Title = "Available Roles"
