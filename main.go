@@ -58,7 +58,7 @@ func main() {
 
 // called when discord sends the ready state
 func ready(s *discordgo.Session, event *discordgo.Ready) {
-	s.UpdateStatus(0, fmt.Sprintf("Type %shelp", loadedConfigData.Prefix))
+	startBotConfig(s)
 }
 
 // called when a new user enters the server
@@ -97,7 +97,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 			dmCommand(s, m, content[0])
 		} else {
 			if _, present := loadedUserData.Users[m.Author.ID]; present {
-				if getAdmin(s, m) {
+				if getOps(s, m) {
+					opsCommand(s, m, content[0])
+				} else if getAdmin(s, m) {
 					adminCommand(s, m, content[0])
 				} else {
 					userCommand(s, m, content[0])

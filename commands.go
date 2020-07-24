@@ -73,12 +73,6 @@ func adminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 		logCommand(s, m)
 	case "help":
 		adminHelpCommand(s, m)
-	// case "massregister":
-	// 	tempMassRegisterCommand(s, m)
-	// 	logCommand(s, m)
-	case "repush-names":
-		pushNamesCommand(s, m)
-		logCommand(s, m)
 	case "deregister":
 		deregisterUserCommand(s, m)
 		logCommand(s, m)
@@ -93,6 +87,28 @@ func adminCommand(s *discordgo.Session, m *discordgo.MessageCreate, command stri
 	}
 }
 
+// process commands for ops
+func opsCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string) {
+	switch command {
+	case "massregister":
+		tempMassRegisterCommand(s, m)
+		logCommand(s, m)
+	case "repush-names":
+		pushNamesCommand(s, m)
+		logCommand(s, m)
+	case "push-user":
+		pushUserCommand(s, m)
+		logCommand(s, m)
+	case "reload-bot":
+		reloadBotCommand(s, m)
+		logCommand(s, m)
+	case "help":
+		opsHelpCommand(s, m)
+	default:
+		adminCommand(s, m, command)
+	}
+}
+
 func dmHelpCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getDMHelpEmbed())
 }
@@ -103,6 +119,10 @@ func serverHelpCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func adminHelpCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	s.ChannelMessageSendEmbed(m.ChannelID, getAdminHelpEmbed())
+}
+
+func opsHelpCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	s.ChannelMessageSendEmbed(m.ChannelID, getOpsHelpEmbed())
 }
 
 func defaultHelpCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -447,4 +467,26 @@ func makeBigLettersCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 		message += " "
 	}
 	s.ChannelMessageSend(m.ChannelID, message)
+}
+
+func pushUserCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	if len(m.Mentions) <= 0 {
+		s.ChannelMessageSend(m.ChannelID, "Make sure to mention a user to push the name for")
+		return
+	}
+	pushNewUser(m.Mentions[0], s)
+	s.ChannelMessageSend(m.ChannelID, "User pushed")
+}
+
+func reloadBotCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
+	// reload bot resources in place
+	if err := loadUsers(); err != nil {
+		s.ChannelMessageSend(m.ChannelID, "error loading user file")
+	}
+
+	if err := loadConfig(); err != nil {
+		s.ChannelMessageSend(m.ChannelID, "error loading config file")
+	} else {
+		startBotConfig(s)
+	}
 }

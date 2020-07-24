@@ -37,6 +37,16 @@ func getAdmin(s *discordgo.Session, m *discordgo.MessageCreate) bool {
 	return getRole(s, m.Author, m.Message, loadedConfigData.ModRoleName)
 }
 
+func getOps(s *discordgo.Session, m *discordgo.MessageCreate) bool {
+	// bleh O(n) lookup. use a map
+	for _, v := range loadedConfigData.OpsUsers {
+		if v == m.Author.ID {
+			return true
+		}
+	}
+	return false
+}
+
 func parseUpdateRole(s *discordgo.Session, m *discordgo.MessageCreate, removing bool) {
 	// if an admin is modifying another persons' role
 	if getAdmin(s, m) && len(m.Mentions) > 0 {
