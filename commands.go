@@ -24,6 +24,8 @@ func dmCommand(s *discordgo.Session, m *discordgo.MessageCreate, command string)
 		lastLovedCommand(s, m)
 	case "lastregister":
 		registerUserLastFMCommand(s, m)
+	case "bigletters":
+		makeBigLettersCommand(s, m)
 	default:
 		defaultHelpCommand(s, m)
 	}
