@@ -29,7 +29,7 @@ type UserDB interface {
 	Save() error
 }
 
-type UserDBImpl struct {
+type userDBImpl struct {
 	path  string
 	users map[string]User // mapped by id
 }
@@ -44,7 +44,7 @@ func NewUserDB(path string) (UserDB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db := UserDBImpl{
+	db := userDBImpl{
 		path:  path,
 		users: make(map[string]User),
 	}
@@ -55,7 +55,7 @@ func NewUserDB(path string) (UserDB, error) {
 	return &db, nil
 }
 
-func (u *UserDBImpl) Get(key string) (*User, bool) {
+func (u *userDBImpl) Get(key string) (*User, bool) {
 	if user, present := u.users[key]; !present {
 		return nil, false
 	} else {
@@ -63,23 +63,24 @@ func (u *UserDBImpl) Get(key string) (*User, bool) {
 	}
 }
 
-func (u *UserDBImpl) Add(key string, user *User) error {
+func (u *userDBImpl) Add(key string, user *User) error {
 	if _, present := u.users[key]; present {
 		return ErrUserPresent
 	}
 	return u.Put(key, user)
 }
 
-func (u *UserDBImpl) Put(key string, user *User) error {
+func (u *userDBImpl) Put(key string, user *User) error {
+	oldUser := u.users[key]
 	u.users[key] = *user
 	if err := u.Save(); err != nil {
-		delete(u.users, key)
+		u.users[key] = oldUser
 		return err
 	}
 	return nil
 }
 
-func (u *UserDBImpl) Save() error {
+func (u *userDBImpl) Save() error {
 	marshalled, err := json.Marshal(u.users)
 	if err != nil {
 		return err
@@ -97,7 +98,7 @@ type UserInt interface {
 	Update(id, firstName, lastName string, gradYear int) (*User, error)
 }
 
-type UserIntImpl struct {
+type userIntImpl struct {
 	db UserDB
 }
 
@@ -106,12 +107,12 @@ func NewUserInt(path string) (UserInt, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &UserIntImpl{
+	return &userIntImpl{
 		db: db,
 	}, nil
 }
 
-func (u *UserIntImpl) ById(id string) (*User, error) {
+func (u *userIntImpl) ById(id string) (*User, error) {
 	if user, present := u.db.Get(id); !present {
 		return nil, ErrUserNotPresent
 	} else {
@@ -119,7 +120,7 @@ func (u *UserIntImpl) ById(id string) (*User, error) {
 	}
 }
 
-func (u *UserIntImpl) Register(id, firstName, lastName string, gradYear int) (*User, error) {
+func (u *userIntImpl) Register(id, firstName, lastName string, gradYear int) (*User, error) {
 	if _, present := u.db.Get(id); present {
 		return nil, ErrUserPresent
 	}
@@ -144,7 +145,7 @@ func (u *UserIntImpl) Register(id, firstName, lastName string, gradYear int) (*U
 	return user, nil
 }
 
-func (u *UserIntImpl) Update(id, firstName, lastName string, gradYear int) (*User, error) {
+func (u *userIntImpl) Update(id, firstName, lastName string, gradYear int) (*User, error) {
 	user, present := u.db.Get(id)
 	if !present {
 		return nil, ErrUserNotPresent
