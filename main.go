@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"regexp"
 	"strings"
 	"syscall"
 
@@ -82,15 +81,6 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	isDM := m.GuildID == ""
 
-	r, _ := regexp.Compile("https*:\\/\\/discord.gg\\/(invite\\/)*[a-zA-Z0-9]{6}")
-	if !isDM && r.MatchString(m.Content) {
-		err := s.ChannelMessageDelete(m.ChannelID, m.ID)
-		logServerInvite(s, m)
-		if err != nil {
-			fmt.Printf("Failed to delete invite %s: %s", m.Content, err)
-			return
-		}
-	}
 	if strings.HasPrefix(m.Content, loadedConfigData.Prefix) {
 		content := strings.Fields(strings.TrimPrefix(m.Content, loadedConfigData.Prefix))
 		if isDM {
